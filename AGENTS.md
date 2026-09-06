@@ -13,12 +13,12 @@ This is the static fraud-awareness site in `glassmagic/checkthecaller`, aimed at
 ## Netlify deployment
 
 - This project uses Netlify's native GitHub integration, like Playgraze. Merges into `main` trigger production builds; pull requests receive Deploy Previews. GitHub Actions is not needed to deploy.
-- Netlify project: `checkthecaller`, team `adampowell-is`, site ID `bbc760d7-a824-4ee4-9035-3de1f74e4ac3`. Production: `https://checkthecaller.netlify.app`. PR previews: `https://deploy-preview-<PR number>--checkthecaller.netlify.app`.
+- Netlify project: `checkthecaller`, team `adampowell-is`, site ID `bbc760d7-a824-4ee4-9035-3de1f74e4ac3`. Netlify URL: `https://checkthecaller.netlify.app`; configured custom domain: `https://checkthecaller.co.uk`. PR previews: `https://deploy-preview-<PR number>--checkthecaller.netlify.app`.
 - Build settings live in Netlify: production branch `main`, build command `make build`, publish directory `dist`, no base directory.
 - Never publish the repository root. `scripts/site.py` copies only approved public files into `dist`.
 - Keep `.netlify/`, generated `dist/`, `.preview-servers/`, `.mcp_memory/`, environment files and Python caches out of Git.
 - The local Netlify link is stored in ignored `.netlify/state.json`. Read the site ID there; never copy Playgraze's ID or modify its deployment.
-- GitHub repository events are delivered to Netlify by a webhook for `push`, `pull_request` and `delete`. Preserve this hook when changing deployment settings.
+- GitHub repository events are delivered to Netlify by a webhook for `push`, `pull_request` and `delete`. Preserve this hook and the native GitHub App deploy notifications when changing deployment settings. The Netlify GitHub App must have repository access.
 - Preserve Netlify hosting. Do not register or deploy this project with another hosting service unless the user asks.
 - The original videos are currently under GitHub's regular Git per-file size limit and are tracked directly. Do not silently replace them, convert them to LFS pointers or include duplicate copies from `dist`.
 

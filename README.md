@@ -35,9 +35,9 @@ The workflow follows Playgraze: make changes on a feature branch, open a ready-f
 
 Netlify is connected directly to GitHub, so no GitHub Actions deployment workflow or deployment token in the repository is needed. Settings are stored in Netlify, as they are for Playgraze:
 
-PR previews use `https://deploy-preview-<PR number>--checkthecaller.netlify.app`. Netlify adds their status and URL to the GitHub PR. No custom domain has been connected yet.
+PR previews use `https://deploy-preview-<PR number>--checkthecaller.netlify.app`. Netlify is configured to add their status and URL to the GitHub PR. The custom domain `checkthecaller.co.uk` is also configured in Netlify.
 
-Repository events are delivered through GitHub's Netlify webhook (`push`, `pull_request`, and branch `delete`), using the endpoint configured by Netlify. This is the webhook mechanism supported by Netlify CLI, with no Actions workflow needed.
+Repository events are delivered through GitHub's Netlify webhook (`push`, `pull_request`, and branch `delete`), using the endpoint configured by Netlify. This is the webhook mechanism supported by Netlify CLI, with no Actions workflow needed. Native GitHub App notifications report build status, checks and preview links, matching Playgraze. The Netlify GitHub App must have access to `checkthecaller` for this integration to work.
 
 | Setting | Value |
 | --- | --- |
