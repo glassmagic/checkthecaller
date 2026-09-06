@@ -18,6 +18,7 @@ This is the static fraud-awareness site in `glassmagic/checkthecaller`, aimed at
 - Never publish the repository root. `scripts/site.py` copies only approved public files into `dist`.
 - Keep `.netlify/`, generated `dist/`, `.preview-servers/`, `.mcp_memory/`, environment files and Python caches out of Git.
 - The local Netlify link is stored in ignored `.netlify/state.json`. Read the site ID there; never copy Playgraze's ID or modify its deployment.
+- GitHub repository events are delivered to Netlify by a webhook for `push`, `pull_request` and `delete`. Preserve this hook when changing deployment settings.
 - Preserve Netlify hosting. Do not register or deploy this project with another hosting service unless the user asks.
 - The original videos are currently under GitHub's regular Git per-file size limit and are tracked directly. Do not silently replace them, convert them to LFS pointers or include duplicate copies from `dist`.
 

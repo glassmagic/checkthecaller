@@ -37,6 +37,8 @@ Netlify is connected directly to GitHub, so no GitHub Actions deployment workflo
 
 PR previews use `https://deploy-preview-<PR number>--checkthecaller.netlify.app`. Netlify adds their status and URL to the GitHub PR. No custom domain has been connected yet.
 
+Repository events are delivered through GitHub's Netlify webhook (`push`, `pull_request`, and branch `delete`), using the endpoint configured by Netlify. This is the webhook mechanism supported by Netlify CLI, with no Actions workflow needed.
+
 | Setting | Value |
 | --- | --- |
 | Production branch | `main` |
