@@ -25,6 +25,30 @@ Run `make build`, then drag the **dist folder** into Netlify Drop. It contains `
 
 Only an explicit list of public files is copied. Source scripts, tests, local memory and other hidden files are excluded. A missing required asset fails the build before replacing an existing dist folder. Rebuilding replaces generated dist contents, so edit the source files rather than dist.
 
+## GitHub and automatic Netlify deploys
+
+Source repository: [glassmagic/checkthecaller](https://github.com/glassmagic/checkthecaller). The SSH remote is `git@github.com:glassmagic/checkthecaller.git`.
+
+Production: [checkthecaller.netlify.app](https://checkthecaller.netlify.app). Manage the site in the [Netlify dashboard](https://app.netlify.com/projects/checkthecaller). It belongs to the same Netlify team as Playgraze (`adampowell-is`), with site ID `bbc760d7-a824-4ee4-9035-3de1f74e4ac3`.
+
+The workflow follows Playgraze: make changes on a feature branch, open a ready-for-review pull request, review its Netlify Deploy Preview, then merge on GitHub to publish. The user handles merges. The initial import seeded the empty repository's `main` branch; subsequent changes go through PRs.
+
+Netlify is connected directly to GitHub, so no GitHub Actions deployment workflow or deployment token in the repository is needed. Settings are stored in Netlify, as they are for Playgraze:
+
+PR previews use `https://deploy-preview-<PR number>--checkthecaller.netlify.app`. Netlify adds their status and URL to the GitHub PR. No custom domain has been connected yet.
+
+| Setting | Value |
+| --- | --- |
+| Production branch | `main` |
+| Build command | `make build` |
+| Publish directory | `dist` |
+| Base directory | Empty (repository root) |
+| Deploy Previews | Enabled for pull requests |
+
+Playgraze publishes its repository root without a build command. This site publishes `dist` because it packages videos and must exclude local scripts, tests and private runtime files. The local Netlify CLI connection is in ignored `.netlify/state.json`. Existing Make commands and Netlify Drop remain available.
+
+Both videos are tracked directly in Git, and `dist` is ignored. Each video is below GitHub's 100 MiB per-file limit, although GitHub warns for files over 50 MiB. See [GitHub's large-file guidance](https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-files-on-github) before replacing them with larger files.
+
 ## Story behaviour
 
 - The viewer presses “Watch the story”; sound does not autoplay on arrival.
