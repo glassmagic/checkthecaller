@@ -10,17 +10,47 @@ This is the static fraud-awareness site in `glassmagic/checkthecaller`, aimed at
 - After the user says a PR is merged, switch to `main`, pull with `--ff-only`, fetch with `--prune`, and remove the merged local branch if safe.
 - Keep the repository public as configured. Do not change its visibility without an explicit request.
 
+### Routine change process
+
+This follows the branch, review and deployment process in Playgraze's `AGENTS.md`, adapted to this site's build and player.
+
+1. Read this file, check `git status`, the current branch and the current PR state before editing. Preserve unrelated user changes.
+2. Use one feature branch per PR. Add follow-up requests to the same open PR as separate commits; if it has merged, start a new branch from updated `main`.
+3. Make the requested change and run the relevant checks below. Keep small copy or documentation changes lean: inspect all affected occurrences and the diff, without unrelated refactors or new test infrastructure.
+4. Commit and push, then open or update a ready-for-review PR. Describe what changed and the checks actually performed. Verify `isDraft` is false with `gh pr view <number> --json isDraft` and give the user the PR link.
+5. The user merges and normally deletes the remote branch. Once they report the merge, confirm it on GitHub, switch to `main`, pull with `--ff-only`, fetch with `--prune`, and safely delete the merged local branch. Do not discard uncommitted work or unmerged commits during cleanup.
+6. Verify the production deploy is ready for the merged `main` commit and that the affected public files are served. Use commit IDs to track deployment; this site does not use Playgraze's game-specific PR/version-number convention.
+
 ## Netlify deployment
 
 - This project uses Netlify's native GitHub integration, like Playgraze. Merges into `main` trigger production builds; pull requests receive Deploy Previews. GitHub Actions is not needed to deploy.
 - Netlify project: `checkthecaller`, team `adampowell-is`, site ID `bbc760d7-a824-4ee4-9035-3de1f74e4ac3`. Netlify URL: `https://checkthecaller.netlify.app`; configured custom domain: `https://checkthecaller.co.uk`. PR previews: `https://deploy-preview-<PR number>--checkthecaller.netlify.app`.
 - Build settings live in Netlify: production branch `main`, build command `make build`, publish directory `dist`, no base directory.
+- Keep that single source of build configuration; do not add a redundant `netlify.toml` or GitHub Actions deployment workflow.
 - Never publish the repository root. `scripts/site.py` copies only approved public files into `dist`.
 - Keep `.netlify/`, generated `dist/`, `.preview-servers/`, `.mcp_memory/`, environment files and Python caches out of Git.
 - The local Netlify link is stored in ignored `.netlify/state.json`. Read the site ID there; never copy Playgraze's ID or modify its deployment.
 - GitHub repository events are delivered to Netlify by a webhook for `push`, `pull_request` and `delete`. Preserve this hook and the native GitHub App deploy notifications when changing deployment settings. The Netlify GitHub App must have repository access.
 - Preserve Netlify hosting. Do not register or deploy this project with another hosting service unless the user asks.
 - The original videos are currently under GitHub's regular Git per-file size limit and are tracked directly. Do not silently replace them, convert them to LFS pointers or include duplicate copies from `dist`.
+
+### Deployment verification and troubleshooting
+
+Use the authenticated Netlify CLI from this project. Inspect actual deploy records when GitHub reports a preview failure or a build does not appear:
+
+```sh
+netlify api listSiteDeploys --data '{"site_id":"bbc760d7-a824-4ee4-9035-3de1f74e4ac3","per_page":5}'
+gh pr view <number> --repo glassmagic/checkthecaller --json state,isDraft,statusCheckRollup
+```
+
+Compare `context`, `review_id`, `commit_ref`, `state` and `error_message` with the intended PR or production commit. A successful webhook response alone does not prove that Netlify created a build. Do not trigger repeated production builds just to test documentation changes. For routine low-risk changes, hand over the PR promptly; wait for a preview when deployment is the task or the change warrants it.
+
+Setup status recorded on 7 September 2026 (recheck before treating it as current):
+
+- The initial production import deployed successfully and the Netlify URL served the site and both videos.
+- Automatic PR previews had not started despite successful webhook deliveries. The existing Netlify GitHub App installation is `139677806`; repository access must include `glassmagic/checkthecaller`. GitHub denied the CLI attempt to change its access. Ask the user to check the installation settings if this remains unresolved; do not claim previews work until a matching preview deploy is ready.
+- `checkthecaller.co.uk` was configured, but HTTPS hostname validation failed. Keep the working Netlify URL available and verify the custom domain's certificate before reporting it as ready. Do not disable certificate verification.
+- Update these setup notes when the outstanding checks are resolved, so future agents do not repeat finished work.
 
 ## Work and checks
 
