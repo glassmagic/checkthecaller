@@ -1,0 +1,9 @@
+dist/
+.dist-build-*/
+.preview-servers/
+.mcp_memory/
+__pycache__/
+.DS_Store
+.netlify/
+.env
+.env.*
