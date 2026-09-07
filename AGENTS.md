@@ -1,6 +1,6 @@
 # Check the Caller
 
-This is the static fraud-awareness site in `glassmagic/checkthecaller`, aimed at older viewers. It uses plain HTML, CSS and JavaScript plus two supplied videos. Keep the large text, clear controls, 30-second choice, both endings and optional commentary replay. Keep explanations over the film and avoid automatic page scrolling.
+This is the static fraud-awareness site in `glassmagic/checkthecaller`, aimed at older viewers. It uses plain HTML, CSS and JavaScript plus two supplied videos. After the shared code, a menu offers two parts: an HTML presentation (*Staying Safer in a Digital World*, 12 pages) and the *Check the Caller* interactive film. Keep the large text, clear controls, 30-second choice, both endings and optional commentary replay. Keep explanations over the film and avoid automatic page scrolling.
 
 ## GitHub workflow
 
@@ -74,6 +74,15 @@ ow passes HTTPS validation and returns HTTP 200. The earlier certificate issue i
 - Compact commentary stays paused until Continue film; desktop retains the 12-second timer with Keep paused. Preserve the existing cue times and all six explanations.
 - Background preloading begins on `canplaythrough`, fetches only the other ending for the current presentation, and uses the completed local blob on selection. Never wait for an unfinished background download before starting the selected film. Keep normal loading/Retry as fallback and cancel obsolete requests on rotation.
 - `_headers` must permit `connect-src 'self'` and `media-src 'self' blob:` for preloading. Do not broaden these to external domains. Validate actual cached playback in the browser, as simulated media tests alone cannot verify decoding or response headers.
+
+## Presentation, menu and shared design
+
+- The presentation in `index.html` (`#presentation`, pages `#slide-1` to `#slide-12`) is the HTML version of `Staying-Safer-in-a-Digital-World.pptx`. Keep its wording, page order and page count matching the deck unless the user supplies a new deck. The `.pptx` is reference material only (project root, if present) and is never copied into `dist`.
+- `access.js` owns the menu and routing: the address hash is the single source of truth (`#film`, `#slide-N`, `#menu`), and each part's script (`app.js`, `presentation.js`) loads only when first chosen. Opening the presentation must never start a video download. `presentation.js` only navigates pages.
+- The site's palette is sampled from the slides and lives in `:root` in `styles.css` (teal `#0f7675`/`#05726d`, orange `#e4562e`, yellow `#f6b93c`, purple `#6a4d8f`, green `#2d9f5a`, charcoal text `#1e2c2c`, and the pale mint/peach/lavender/leaf/cream card tints). Reuse those tokens; do not reintroduce the earlier lime accent or serif headings.
+- Icons are inline SVG `<symbol>`s at the top of `index.html`, used through `<use href="#i-name">`. Add to that sprite rather than adding image files or emoji.
+- The film's copy uses the presentation's language: the choice is *say yes* versus *say no, hang up and check*; warning signs cite the three responses; the advice page is *Stop, check, report, ask*; the closing line is *Enlightened, not frightened*. Keep the film and the presentation saying the same thing when either changes.
+- `tests/presentation.test.cjs` reads the page ids from `index.html`; `tests/access.test.cjs` covers the menu, routing and on-demand script loading. Run `make test` after touching any of `index.html`, `access.js`, `presentation.js` or `app.js`.
 
 ## uv and the access page
 
