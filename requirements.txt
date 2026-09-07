@@ -1,0 +1,3 @@
+# Netlify's Python installer bootstraps uv before `make build`.
+# Project dependencies belong in pyproject.toml / uv.lock, not this file.
+uv==0.12.1

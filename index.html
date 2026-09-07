@@ -15,12 +15,27 @@
   <link rel="icon" href="assets/check-the-caller.png" type="image/png" sizes="180x180">
   <link rel="apple-touch-icon" href="assets/check-the-caller.png" sizes="180x180">
   <link rel="stylesheet" href="styles.css">
-  <script src="app.js" defer></script>
+  <script src="access.js" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#experience">Skip to the video</a>
+  <section class="access-page" id="access-page" aria-labelledby="access-title">
+    <div class="access-card">
+      <div class="access-brand"><img src="assets/check-the-caller.svg" width="52" height="52" alt=""><span>Check the Caller</span></div>
+      <h1 id="access-title">Learn to spot a phone scam</h1>
+      <p>Practise spotting a phone scam in a short film.</p>
+      <form id="access-form" novalidate>
+        <label for="access-code">Access code</label>
+        <input id="access-code" name="access-code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="access-error" required>
+        <p class="access-error" id="access-error" role="alert" hidden></p>
+        <button class="primary-button" id="access-submit" type="submit">Open the film <span aria-hidden="true">→</span></button>
+      </form>
+      <p class="access-support">Need a code? Ask the person who shared this site with you.</p>
+      <noscript><p>This site needs JavaScript. Please enable it to enter your code and watch the film.</p></noscript>
+    </div>
+  </section>
+  <a class="skip-link" id="film-skip-link" href="#experience" hidden>Skip to the video</a>
 
-  <main id="experience">
+  <main id="experience" hidden>
     <div class="intro-heading">
       <div class="intro-title">
         <p class="eyebrow">SPOT THE SCAM · AN INTERACTIVE FILM</p>
@@ -42,7 +57,7 @@
         <div class="start-screen" id="start-screen">
           <div class="start-content">
             <span class="film-label">THE UNEXPECTED CALL</span>
-            <button class="start-button" id="start" type="button"><span aria-hidden="true">▶</span> Watch the story</button>
+            <button class="start-button" id="start" type="button"><span class="play-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M8 5.5v13l11-6.5Z"/></svg></span><span class="start-label">Watch the story</span></button>
             <p>Sound on · The story pauses for your choice</p>
           </div>
         </div>
@@ -114,7 +129,7 @@
               <h2 id="safe-next-step-title" tabindex="-1">Stop, hang up and check</h2>
               <ol class="safety-steps">
                 <li><strong>Hang up.</strong> Stop following the caller’s instructions.</li>
-                <li><strong>Wait five minutes</strong> before calling back.</li>
+                <li><strong>Wait five minutes</strong> before you call your bank.</li>
                 <li><strong>Call the number on your bank card.</strong> Use a number you trust.</li>
               </ol>
               <p class="advice-source"><a href="https://www.takefive-stopfraud.org.uk/protect-yourself/impersonation-fraud/" target="_blank" rel="noopener noreferrer">Take Five advice (new tab)</a></p>
@@ -131,7 +146,7 @@
           </div>
             </section>
           </div>
-          <nav class="result-navigation" aria-label="Read the ending explanation">
+          <nav class="result-navigation" id="result-navigation" aria-label="Read the ending explanation">
             <button class="text-button" id="result-back" type="button">Back</button>
             <p id="result-page-count" aria-live="polite">1 of 6</p>
             <button class="primary-button" id="result-next" type="button">Next →</button>
@@ -155,7 +170,6 @@
       </div>
     </section>
     <p class="sr-only" role="status" id="status" aria-live="polite"></p>
-    <noscript><p class="no-script">This interactive film needs JavaScript. Please enable it, or watch the <a href="ScamProtection_Right.m4v">safer ending</a> and <a href="ScamProtection_Wrong.m4v">unsafe ending</a> directly.</p></noscript>
   </main>
 </body>
 </html>

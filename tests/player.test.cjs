@@ -408,7 +408,8 @@ test('a new ending opens its outcome instead of retaining the previous explanati
   $('result-replays').click();
   $('other-ending').click(); metadata(); end();
   assert.equal($('result-page-0').hidden, false);
-  assert.equal($('result-page-count').textContent, 'Your result');
+  assert.equal($('result-page-count').textContent, '');
+  assert.equal($('result-navigation').attributes['data-page'], '0');
   assert.equal($('result-actions').hidden, true);
 });
 

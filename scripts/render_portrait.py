@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Offline, frame-exact mobile derivatives. Requires FFmpeg and Pillow, never run by make build.
 
-python3 scripts/render_portrait.py [--proof-dir /tmp/portrait-proof]
+uv run --locked --group media scripts/render_portrait.py [--proof-dir /tmp/portrait-proof]
 Edit media/portrait-framing.json, inspect the proof sheets, then commit the MP4s.
 Original timing and AAC audio are preserved. Nothing is uploaded by this script.
 """
