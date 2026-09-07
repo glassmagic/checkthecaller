@@ -30,7 +30,7 @@ This follows the branch, review and deployment process in Playgraze's `AGENTS.md
 - Never publish the repository root. `scripts/site.py` copies only approved public files into `dist`.
 - Keep `.netlify/`, generated `dist/`, `.preview-servers/`, `.mcp_memory/`, environment files and Python caches out of Git.
 - The local Netlify link is stored in ignored `.netlify/state.json`. Read the site ID there; never copy Playgraze's ID or modify its deployment.
-- GitHub repository events are delivered to Netlify by a webhook for `push`, `pull_request` and `delete`. Preserve this hook and the native GitHub App deploy notifications when changing deployment settings. The Netlify GitHub App must have repository access.
+- Builds are triggered by the Netlify GitHub App (installation `139677806`), which must have access to `glassmagic/checkthecaller`. The repository has **no** repository-level webhook and must not get one: a leftover legacy `api.netlify.com/hooks/github` webhook was the original cause of merges not deploying (GitHub reported 204 OK deliveries while Netlify created no build). If a repo webhook to Netlify reappears, the link is wrong; re-link the repository through the Netlify UI rather than adding hooks.
 - Preserve Netlify hosting. Do not register or deploy this project with another hosting service unless the user asks.
 - The original videos are currently under GitHub's regular Git per-file size limit and are tracked directly. Do not silently replace them, convert them to LFS pointers or include duplicate copies from `dist`.
 
@@ -43,13 +43,16 @@ netlify api listSiteDeploys --data '{"site_id":"bbc760d7-a824-4ee4-9035-3de1f74e
 gh pr view <number> --repo glassmagic/checkthecaller --json state,isDraft,statusCheckRollup
 ```
 
-Compare `context`, `review_id`, `commit_ref`, `state` and `error_message` with the intended PR or production commit. A successful webhook response alone does not prove that Netlify created a build. Do not trigger repeated production builds just to test documentation changes. For routine low-risk changes, hand over the PR promptly; wait for a preview when deployment is the task or the change warrants it.
+Compare `context`, `review_id`, `commit_ref`, `state` and `error_message` with the intended PR or production commit. A successful webhook response alone does nSetup status checked on 7 September 2026 (recheck before treating it as current):
 
-Setup status checked on 7 September 2026 (recheck before treating it as current):
+- Automatic production deploys from `main` are confirmed working. After re-linking the repository in Netlify (which replaced the stale legacy webhook with the GitHub App event path), a push of `b63af74` at 21:01:29Z produced a Netlify build at 21:01:30Z with no manual trigger. Before the re-link, PR #1 (`d164a6e`) and PR #2 (`cdbc633`) merged without triggering any build and were deployed manually.
+- Manual fallback if a merge does not build within a minute: `netlify api createSiteBuild --data '{"site_id":"bbc760d7-a824-4ee4-9035-3de1f74e4ac3"}'`. This builds on Netlify from the repository's `main`; nothing is uploaded from the local machine. Prefer it over `netlify deploy --build --prod`, which publishes the local working tree and uploads the ~170 MB `dist`.
+- Do not diagnose a missing build as an untrusted-contributor problem without evidence: the sole team member is an Owner linked to GitHub `glassmagic`, and held builds would show `deploy_pending_review_reason` on `listSiteBuilds`. The failure mode seen here created no build record at all.
+- Automatic PR Deploy Previews are confirmed working since the re-link: PR #3 received a `deploy-preview` deploy (`review_id` 3) within 30 seconds of its push, with no manual trigger. PR #2 predates the re-link and received none.
+- `https://checkthecaller.co.uk` passes HTTPS validation and returns HTTP 200. Do not disable certificate verification.
+- No deployment setup work is outstanding. Do not re-verify or re-link unless a merge or PR fails to build.
 
-- PR #1 merged as `d164a6eef86d60cc6a81615e91ae65d12e87d23f`. Netlify automatically deployed that main commit successfully (`6a9e62c7be30eefcceeffe29`). Served HTML, JavaScript, styles, branding and all four video byte ranges were verified.
-- Production GitHub-triggered builds now work. Automatic PR previews had not started during the initial setup despite successful webhook deliveries. The existing Netlify GitHub App installation is `139677806`; repository access must include `glassmagic/checkthecaller`. GitHub denied the CLI attempt to change its access. Ask the user to check the installation settings if this remains unresolved; do not claim previews work until a matching preview deploy is ready.
-- `https://checkthecaller.co.uk` now passes HTTPS validation and returns HTTP 200. The earlier certificate issue is resolved. Do not disable certificate verification.
+ow passes HTTPS validation and returns HTTP 200. The earlier certificate issue is resolved. Do not disable certificate verification.
 - Update these setup notes when the outstanding checks are resolved, so future agents do not repeat finished work.
 
 ## Work and checks
