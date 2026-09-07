@@ -4,7 +4,7 @@ A single-page, accessible interactive film, built with plain HTML, CSS and JavaS
 
 ## Commands
 
-Python 3.9+ and Make are the only local requirements.
+[uv](https://docs.astral.sh/uv/guides/projects/) and Make are the local requirements. uv manages Python (3.13, recorded in `.python-version`) and the project environment. Tests also use Node.js.
 
 ```sh
 make help                 # List commands
@@ -13,11 +13,26 @@ make run                  # Build, serve and open the site in your browser
 make run PORT=8080        # Use another port
 make stop                 # Stop all preview servers for this project
 make build                # Produce a self-contained dist/ folder
+make test                 # Run player, access and packaging checks
 ```
 
-Press Ctrl+C to stop the local server. It listens on localhost only and supports byte-range requests so videos can seek to the selected ending without downloading the whole file first. Without Make, use `python3 scripts/site.py run` or `python3 scripts/site.py build`.
+Press Ctrl+C to stop the local server. It listens on localhost only and supports byte-range requests so videos can seek to the selected ending without downloading the whole file first. Without Make, use `uv run --locked scripts/site.py run` or `uv run --locked scripts/site.py build`.
 
-`make stop` stops every preview started from this project, including previews running on different ports or in other terminals. Each preview registers a private shutdown token in `.preview-servers/`; the stop command contacts only those registered localhost servers. It does not kill processes by name or affect unrelated sites. Stale records are cleaned up when a server has already stopped. These local records are never included in dist. Without Make, use `python3 scripts/site.py stop`.
+`make stop` stops every preview started from this project, including previews running on different ports or in other terminals. Each preview registers a private shutdown token in `.preview-servers/`; the stop command contacts only those registered localhost servers. It does not kill processes by name or affect unrelated sites. Stale records are cleaned up when a server has already stopped. These local records are never included in dist. Without Make, use `uv run --locked scripts/site.py stop`.
+
+## Python dependency management
+
+`pyproject.toml` and committed `uv.lock` are the source of project dependencies. `uv run --locked` creates/synchronises `.venv` automatically and refuses an out-of-date lockfile. Build, preview and tests need no third-party Python libraries. The optional `media` group locks Pillow for the offline portrait tools; FFmpeg remains a system tool. Use `uv add --group media <package>` for media dependencies and commit the updated manifest and lock together. `.venv` is ignored and never published.
+
+Netlify's [Python dependency installation](https://docs.netlify.com/build/configure-builds/manage-dependencies/#python-dependencies) reads `requirements.txt` to bootstrap the pinned uv executable before `make build`. That file contains only uv; application dependencies stay in `pyproject.toml` and `uv.lock`. Netlify's build command and publish directory remain `make build` and `dist`.
+
+## Access-code entry page
+
+Visitors first see the Check the Caller landing page and enter **check2026**. Matching ignores case and spaces at either end. Successful entry is remembered for this browser tab's session; a new session asks again. If storage is unavailable, entry still works, but refreshing asks again. Change `ACCESS_CODE` in `access.js` (uppercase) to change the shared code; rebuild and deploy. Old remembered codes will no longer match.
+
+The player script and video downloads start only after the correct code is entered. Invalid or empty codes show a readable error; an interrupted player-script download can be retried. The landing page uses a visible text field, large controls and no emoji. The film's play icons use SVG/CSS shapes.
+
+This is a lightweight entry screen, **not authentication**. The code and static HTML/videos remain publicly accessible; it does not protect private material. The site remains a static Netlify Drop package without a backend.
 
 ## Netlify Drop
 
@@ -59,7 +74,7 @@ Both videos are tracked directly in Git, and `dist` is ignored. Each video is be
 - “Follow the caller’s instructions” plays `ScamProtection_Wrong.m4v` from 30 seconds.
 - “End the call and check independently” plays `ScamProtection_Right.m4v` from 30 seconds.
 - When an ending finishes, the viewer can watch the other ending from 30 seconds or restart the entire story.
-- Choices and conclusions appear over the film, within the same player area. Endings use six short pages (outcome, three warning signs, safe next steps, and replay choices), with Back/Next controls instead of an internal scrollbar. The outcome offers shortcuts to the warning signs or replay choices. The player reserves the largest explanation’s space from the start, including at enlarged text sizes. Transitions never scroll the page, and normal page scrolling is not trapped when the pointer is over the video.
+- Choices and conclusions appear over the film, within the same player area. Endings use six short pages (outcome, three warning signs, safe next steps, and replay choices), with Back/Next controls instead of an internal scrollbar. The outcome offers shortcuts to the warning signs or replay choices. Its navigation strip is invisible; advice pages show Back/Next without changing the reserved player height. The player reserves the largest explanation’s space from the start, including at enlarged text sizes. Transitions never scroll the page, and normal page scrolling is not trapped when the pointer is over the video.
 - The playback position control cannot skip past the introduction’s decision or rewind an ending into the shared opening. Pause, sound controls, loading feedback and retry are provided.
 
 The boundary uses video-frame callbacks, media events and a short fallback timer, and clamps the playhead to 30 seconds. Browsers schedule callbacks rather than guarantee frame-exact editing; a suspended or busy browser may briefly run past the boundary before it is clamped. The choice overlay hides playback while the choice is pending.
@@ -70,14 +85,14 @@ Portrait phones up to 650 CSS pixels wide use dedicated 576 × 1024, 24 fps MP4s
 
 The mobile crops are baked into the videos, so they change at the original shot-cut frames without depending on JavaScript callbacks. Most shots hold a fixed crop width with gentle horizontal movement when necessary. Wider views retain the phone, card and face when those cannot all fit a tight portrait crop; a dim blurred surround fills the remaining space. Camera zooms already present in the originals remain.
 
-`media/portrait-framing.json` records zero-based frames, exclusive shot ends and crop poses. After changing the plan, use Python with Pillow and FFmpeg/ffprobe installed to regenerate and verify:
+`media/portrait-framing.json` records zero-based frames, exclusive shot ends and crop poses. After changing the plan, install FFmpeg/ffprobe and use the optional uv `media` group to regenerate and verify:
 
 ```sh
-python3 scripts/render_portrait.py --proof-dir /tmp/checkthecaller-portrait-proof
-python3 scripts/verify_portrait.py
+uv run --locked --group media scripts/render_portrait.py --proof-dir /tmp/checkthecaller-portrait-proof
+uv run --locked --group media scripts/verify_portrait.py
 ```
 
-Inspect the proof sheets, particularly every cut and the phone/card actions. Commit the two derived MP4s, portrait poster, framing plan, manifest and verification report together. The manifest records source/output hashes; verification checks encoded cut-boundary frames and unchanged AAC audio packets. These tools run offline and are **not** part of `make build`; deployment still needs only Python and Make.
+Inspect the proof sheets, particularly every cut and the phone/card actions. Commit the two derived MP4s, portrait poster, framing plan, manifest and verification report together. The manifest records source/output hashes; verification checks encoded cut-boundary frames and unchanged AAC audio packets. These tools run offline and are **not** part of `make build`; deployment uses uv and Make without installing the optional media group.
 
 Once the active film reports that it can play through, the other ending downloads in the background at low priority. A completed download is reused directly when selected. An unfinished or failed download never blocks the choice: the normal media loader takes over. Rotation cancels obsolete background requests. The Netlify Content Security Policy permits only same-origin downloads and local media blobs for this feature. Browsers may defer loading on constrained connections, so background preparation reduces rather than guarantees the absence of buffering.
 
@@ -110,12 +125,11 @@ Edit `index.html` for page and choice wording, `styles.css` for appearance and `
 
 ## Checks
 
-The regression checks use Node.js’s built-in test runner and Python’s standard library, with no install step:
+The regression checks use Node.js’s built-in test runner and Python’s standard library through uv:
 
 ```sh
-node --test tests/player.test.cjs
-python3 -m unittest discover -s tests -p 'test_*.py'
-python3 tests/preview_integration.py  # Localhost checks; stops all project previews
+make test
+uv run --locked tests/preview_integration.py  # Localhost checks; stops all project previews
 ```
 
 The player tests simulate media events; they do not replace testing actual playback in your target browsers. Before sharing widely, watch each path with sound on the devices your viewers use.

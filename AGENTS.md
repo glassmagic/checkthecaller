@@ -45,18 +45,18 @@ gh pr view <number> --repo glassmagic/checkthecaller --json state,isDraft,status
 
 Compare `context`, `review_id`, `commit_ref`, `state` and `error_message` with the intended PR or production commit. A successful webhook response alone does not prove that Netlify created a build. Do not trigger repeated production builds just to test documentation changes. For routine low-risk changes, hand over the PR promptly; wait for a preview when deployment is the task or the change warrants it.
 
-Setup status recorded on 7 September 2026 (recheck before treating it as current):
+Setup status checked on 7 September 2026 (recheck before treating it as current):
 
-- The initial production import deployed successfully and the Netlify URL served the site and both videos.
-- Automatic PR previews had not started despite successful webhook deliveries. The existing Netlify GitHub App installation is `139677806`; repository access must include `glassmagic/checkthecaller`. GitHub denied the CLI attempt to change its access. Ask the user to check the installation settings if this remains unresolved; do not claim previews work until a matching preview deploy is ready.
-- `checkthecaller.co.uk` was configured, but HTTPS hostname validation failed. Keep the working Netlify URL available and verify the custom domain's certificate before reporting it as ready. Do not disable certificate verification.
+- PR #1 merged as `d164a6eef86d60cc6a81615e91ae65d12e87d23f`. Netlify automatically deployed that main commit successfully (`6a9e62c7be30eefcceeffe29`). Served HTML, JavaScript, styles, branding and all four video byte ranges were verified.
+- Production GitHub-triggered builds now work. Automatic PR previews had not started during the initial setup despite successful webhook deliveries. The existing Netlify GitHub App installation is `139677806`; repository access must include `glassmagic/checkthecaller`. GitHub denied the CLI attempt to change its access. Ask the user to check the installation settings if this remains unresolved; do not claim previews work until a matching preview deploy is ready.
+- `https://checkthecaller.co.uk` now passes HTTPS validation and returns HTTP 200. The earlier certificate issue is resolved. Do not disable certificate verification.
 - Update these setup notes when the outstanding checks are resolved, so future agents do not repeat finished work.
 
 ## Work and checks
 
-- `make help`, `make about`, `make run`, `make stop` and `make build` are the supported commands. `make run PORT=8080` selects another port.
+- `make help`, `make about`, `make run`, `make stop`, `make build` and `make test` are the supported commands. `make run PORT=8080` selects another port.
 - `make stop` shuts down project preview servers only. `tests/preview_integration.py` also stops all project previews; do not run it casually during unrelated changes.
-- For playback changes, run `node --test tests/player.test.cjs`. For packaging/server changes, run `python3 -m unittest discover -s tests -p 'test_*.py'`.
+- Run `make test` for player/access/packaging changes. It uses Node's built-in test runner and `uv run --locked python -m unittest discover -s tests -p 'test_*.py'`.
 - Run `make build` and `git diff --check` before delivery. Describe the checks actually performed; simulated media tests do not establish real-browser playback.
 - Check the Netlify deploy record for real build errors, and verify the matching commit when reporting a deployment as ready. Do not treat a local build or successful Git push as proof of deployment.
 - Commentary cue times refer to the original unsafe video. Update them only against the dialogue, not by guessing.
@@ -66,8 +66,17 @@ Setup status recorded on 7 September 2026 (recheck before treating it as current
 - Keep the Check the Caller page title, bookmark icons and home-screen title consistent. Existing saved bookmarks may retain a name previously chosen by the viewer.
 - Upright phones (max-width 650px) use the pre-rendered `assets/portrait-*.mp4` files; desktop and landscape retain the source `.m4v` files. Preserve playback position, chosen branch, commentary state and pauses when switching orientation.
 - Mobile reframing lives in `media/portrait-framing.json`: zero-based 24 fps frames, exclusive shot ends, poses `[frame, centre x, width]`. Prefer closer, steady framing with a fixed width within each shot. Pan only to follow action; widen only to retain separated phone/card/face details. Do not add arbitrary zoom pulses or interpolate across hard cuts.
-- Generate derivatives offline with `python3 scripts/render_portrait.py --proof-dir /tmp/portrait-proof` (Pillow + FFmpeg/ffprobe), inspect the sheets, then run `python3 scripts/verify_portrait.py`. Commit the framing plan, manifest, verification report, portrait poster and both MP4s together. Preserve 2039 right / 2161 wrong frames at 24 fps, the 30-second branch point and original AAC packets. Keep these optional rendering dependencies out of Netlify builds.
-- Result screens reserve their largest page before playback. Avoid nested scroll areas and automatic scrolling. Check choice, all result pages and all commentary pauses at 320×568 and a larger portrait viewport. Keep buttons readable and reachable without reducing text to fit.
+- Generate derivatives offline with `uv run --locked --group media scripts/render_portrait.py --proof-dir /tmp/portrait-proof` (Pillow + FFmpeg/ffprobe), inspect the sheets, then run `uv run --locked --group media scripts/verify_portrait.py`. Commit the framing plan, manifest, verification report, portrait poster and both MP4s together. Preserve 2039 right / 2161 wrong frames at 24 fps, the 30-second branch point and original AAC packets. Keep these optional rendering dependencies out of Netlify builds.
+- The outcome page has no “Your result” strip; navigation is invisible there while reserving its space. Result screens reserve their largest page before playback. Avoid nested scroll areas and automatic scrolling. Check choice, all result pages and all commentary pauses at 320×568 and a larger portrait viewport. Keep buttons readable and reachable without reducing text to fit.
 - Compact commentary stays paused until Continue film; desktop retains the 12-second timer with Keep paused. Preserve the existing cue times and all six explanations.
 - Background preloading begins on `canplaythrough`, fetches only the other ending for the current presentation, and uses the completed local blob on selection. Never wait for an unfinished background download before starting the selected film. Keep normal loading/Retry as fallback and cancel obsolete requests on rotation.
 - `_headers` must permit `connect-src 'self'` and `media-src 'self' blob:` for preloading. Do not broaden these to external domains. Validate actual cached playback in the browser, as simulated media tests alone cannot verify decoding or response headers.
+
+## uv and the access page
+
+- Use uv for Python environments and dependencies. Commit `pyproject.toml`, `uv.lock` and `.python-version`; keep `.venv` ignored. Make commands use `uv run --locked`. Pillow belongs to the optional `media` group, never normal builds.
+- `requirements.txt` bootstraps only the pinned uv executable through Netlify's Python dependency installer. Keep application dependencies in `pyproject.toml` / `uv.lock`. Preserve the remote `make build` / `dist` settings, and verify a real Netlify build after changing dependency management.
+- `access.js` owns the shared code (`CHECK2026`, case-insensitive on entry). The landing page is initially visible and the film hidden. Load `app.js` only after the correct code or a matching session value. Never start video downloads while entry is pending.
+- The gate is not authentication: the static code, page and video files remain public. Do not describe it as private or secure access. A stronger access requirement needs a separate hosting/authentication design.
+- Keep the audience in mind: visible code entry, readable error messages, large buttons and keyboard access. Do not use emoji in the interface. Use SVG or CSS shapes for play/pause icons.
+- The safe-steps wording is “Wait five minutes before you call your bank.” Avoid “calling back”, which could imply returning the scammer's call.

@@ -1,0 +1,12 @@
+[project]
+name = "check-the-caller"
+version = "0.1.0"
+description = "Build and preview the Check the Caller interactive film"
+requires-python = ">=3.11"
+dependencies = []
+
+[dependency-groups]
+media = ["pillow>=11,<13"]
+
+[tool.uv]
+package = false
