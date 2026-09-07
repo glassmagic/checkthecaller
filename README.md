@@ -28,11 +28,15 @@ Netlify's [Python dependency installation](https://docs.netlify.com/build/config
 
 ## Access-code entry page
 
-Visitors first see the landing page and enter **check2026**. Matching ignores case and spaces at either end. Successful entry is remembered for this browser tab's session; a new session asks again. If storage is unavailable, entry still works, but refreshing asks again. Change `ACCESS_CODE` in `access.js` (uppercase) to change the shared code; rebuild and deploy. Old remembered codes will no longer match.
+Visitors first see the landing page and enter the shared access code. Matching ignores case and spaces at either end. Successful entry is remembered for this browser tab's session; a new session asks again. If storage is unavailable, entry still works, but refreshing asks again.
 
-After the code, a menu offers the presentation or the film. Each part's script downloads only when it is first chosen: opening the presentation never starts a video download, and the player script and video downloads start only after the film is chosen. Invalid or empty codes show a readable error; an interrupted player-script download can be retried. The landing page uses a visible text field, large controls and no emoji. The film's play icons use SVG/CSS shapes.
+The code is stored nowhere in this repository or the published site. Entering it decrypts `speaker.enc.json`, which holds the presenter's personal details (name, greeting, role, biography and closing line) sealed with AES-GCM under a key derived from the code with PBKDF2-SHA256 (300,000 iterations). A wrong code simply fails to decrypt. Web scrapers and search engines see empty placeholders where those details appear; everything else on the site is generic advice and stays readable.
 
-This is a lightweight entry screen, **not authentication**. The code and static HTML/videos remain publicly accessible; it does not protect private material. The site remains a static Netlify Drop package without a backend.
+To set or change the code, or the details: keep the plain text in `private/speaker.json` (ignored by Git; copy `private/speaker.example.json` to start), then run `make private`, type the code when asked (or pass `ACCESS_CODE=...`), rebuild and deploy. Anyone with the old code must be given the new one. Because the whole repository is public, never commit the plain-text file or the code, and remember that codes used before this scheme remain visible in Git history, so choose a fresh one.
+
+After the code, a menu offers the presentation or the film. Each part's script downloads only when it is first chosen: opening the presentation never starts a video download, and the player script and video downloads start only after the film is chosen. Decryption needs Web Crypto, which browsers provide on HTTPS and on localhost; the local preview serves on 127.0.0.1. Invalid or empty codes show a readable error; an interrupted player-script download can be retried. The landing page uses a visible text field, large controls and no emoji. The film's play icons use SVG/CSS shapes.
+
+This is a lightweight entry screen, **not authentication**. The static HTML and videos remain publicly accessible, and a short code can be guessed offline against the sealed file, so it deters casual scraping rather than a determined attacker. The site remains a static Netlify Drop package without a backend.
 
 ## Presentation and menu
 
@@ -40,11 +44,11 @@ The presentation is a native HTML version of `Staying-Safer-in-a-Digital-World.p
 
 The address hash records where the visitor is, so the browser's Back button works and links can point to a page: `#slide-4` opens page 4, `#film` opens the film, and `#menu` (or no hash) opens the menu, always after the access code. Page 8 and the closing page link to the film; the film's replay screen links back to the presentation.
 
-The film's wording follows the presentation: the choice is *say yes* versus *say no, hang up and check*; the warning signs name the three responses (silence with silence, question with question, yes with no); and the closing advice is *Stop, check, report, ask*. The site's colours (teal, orange, yellow, purple, green and the pale card tints) are sampled from the slides.
+The film's wording follows the presentation: the choice is *say yes* versus *say no, hang up and check*; the warning signs name the three responses (silence with silence, question with question, yes with no); and the closing advice is *Stop, check, report, ask*. The site's colours (teal, orange, yellow, purple, green and the pale card tints) are sampled from the slides, and every screen shares the title slide's teal canvas with its soft shapes. The slide diagrams (the device ring with spokes, the public/private iceberg, the routes bracketing into the scammer, the photo leader lines, the branching call and the arrows between the four steps) are drawn with CSS and one inline SVG; on narrow screens the cards stack and the connecting lines are dropped.
 
 ## Netlify Drop
 
-Run `make build`, then drag the **dist folder** into Netlify Drop. It contains `index.html`, the stylesheet, the three scripts (`access.js`, `presentation.js`, `app.js`), posters, bookmark icons, Netlify response headers, both original videos and their smaller portrait versions. The source `.pptx` is not published. There is no server to deploy and no build command needed on Netlify. The package is approximately 170 MB, including your supplied videos unchanged. The source videos remain in the project root.
+Run `make build`, then drag the **dist folder** into Netlify Drop. It contains `index.html`, the stylesheet, the three scripts (`access.js`, `presentation.js`, `app.js`), the sealed `speaker.enc.json`, posters, bookmark icons, Netlify response headers, both original videos and their smaller portrait versions. The source `.pptx` and `private/speaker.json` are not published. There is no server to deploy and no build command needed on Netlify. The package is approximately 170 MB, including your supplied videos unchanged. The source videos remain in the project root.
 
 Only an explicit list of public files is copied. Source scripts, tests, local memory and other hidden files are excluded. A missing required asset fails the build before replacing an existing dist folder. Rebuilding replaces generated dist contents, so edit the source files rather than dist.
 

@@ -1,28 +1,38 @@
-const { test } = require('node:test');
+const { test, before } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
+const { webcrypto } = require('node:crypto');
+const { encrypt } = require('../scripts/private.cjs');
 const script = fs.readFileSync(path.join(__dirname, '../access.js'), 'utf8');
+
+// The tests seal their own fixture with a code that exists nowhere else.
+const CODE = 'TEST-CODE';
+const FIELDS = { name: 'Test Presenter', greeting: 'Hello, I’m Test', role: 'Tester', bio: 'A bio.', note: 'A note.' };
+let payload;
+before(async () => { payload = await encrypt(FIELDS, CODE, 1000); });
 
 const IDS = ['access-form', 'access-code', 'access-error', 'access-submit', 'access-page', 'hub', 'hub-title', 'hub-error',
   'open-film', 'open-presentation', 'presentation', 'deck-stage', 'deck-menu', 'deck-open-film', 'deck-finish', 'slide-film-link',
   'experience', 'film-menu', 'film-open-presentation', 'film-skip-link', 'start'];
 const HIDDEN = ['hub', 'presentation', 'experience', 'film-skip-link', 'access-error', 'hub-error'];
+const settle = async () => { for (let i = 0; i < 40; i++) await new Promise(resolve => setImmediate(resolve)); };
 
-function setup({ saved = null, blockedStorage = false, hash = '' } = {}) {
+function setup({ saved = null, blockedStorage = false, hash = '', fetchOk = true, crypto = webcrypto } = {}) {
   const elements = new Map();
   const scripts = [];
   const listeners = {};
   let focused;
   for (const id of IDS) {
-    elements.set(id, { value: '', hidden: HIDDEN.includes(id), disabled: false, textContent: '', handlers: {}, attributes: {},
+    elements.set(id, { value: '', hidden: HIDDEN.includes(id), disabled: false, textContent: '', innerHTML: '', handlers: {}, attributes: {},
       addEventListener(event, fn) { this.handlers[event] = fn; },
       setAttribute(name, value) { this.attributes[name] = value; },
       removeAttribute(name) { delete this.attributes[name]; },
       focus(options) { assert.equal(options.preventScroll, true); focused = id; },
     });
   }
+  const privates = ['name', 'name', 'greeting', 'role', 'bio', 'note'].map(field => ({ field, textContent: '', getAttribute(name) { assert.equal(name, 'data-private'); return this.field; } }));
   const $ = id => elements.get(id);
   const storage = {
     getItem() { if (blockedStorage) throw new Error('blocked'); return saved; },
@@ -39,55 +49,89 @@ function setup({ saved = null, blockedStorage = false, hash = '' } = {}) {
       for (const fn of listeners.hashchange || []) fn();
     },
   };
+  let fetches = 0;
+  const fetch = async url => {
+    assert.equal(url, 'speaker.enc.json');
+    fetches++;
+    if (!fetchOk) throw new TypeError('Failed to fetch');
+    return { ok: true, json: async () => payload };
+  };
   vm.runInNewContext(script, {
-    window: { sessionStorage: storage, location, addEventListener(event, fn) { (listeners[event] ??= []).push(fn); } },
+    TextEncoder, TextDecoder,
+    window: { sessionStorage: storage, location, fetch, crypto, atob: text => Buffer.from(text, 'base64').toString('binary'), addEventListener(event, fn) { (listeners[event] ??= []).push(fn); } },
     document: { getElementById: $, head: { append(node) { scripts.push(node); } },
+      querySelectorAll(selector) { assert.equal(selector, '[data-private]'); return privates; },
       createElement(tag) { assert.equal(tag, 'script'); return { remove() { this.removed = true; } }; },
     },
   });
-  function enter(code) {
+  async function enter(code) {
     $('access-code').value = code;
     let prevented = false;
-    $('access-form').handlers.submit({ preventDefault() { prevented = true; } });
+    await $('access-form').handlers.submit({ preventDefault() { prevented = true; } });
     assert.equal(prevented, true);
   }
   const click = id => { assert.equal($(id).disabled, false, `${id} is disabled`); $(id).handlers.click(); };
   const visible = () => IDS.filter(id => ['access-page', 'hub', 'presentation', 'experience'].includes(id) && !$(id).hidden);
-  return { $, scripts, enter, click, visible, location, focused: () => focused, saved: () => saved };
+  return { $, scripts, privates, enter, click, visible, location, fetches: () => fetches, focused: () => focused, saved: () => saved };
 }
 
-test('entry starts locked without loading the player, the presentation or either video', () => {
-  const { visible, scripts } = setup();
+test('entry starts locked: no personal details, no player, no presentation, no video', async () => {
+  const { visible, scripts, privates, fetches } = setup();
+  await settle();
   assert.deepEqual(visible(), ['access-page']);
   assert.equal(scripts.length, 0);
+  assert.equal(fetches(), 0);
+  assert.ok(privates.every(element => element.textContent === ''));
 });
 
-test('empty and incorrect codes give a readable error and keep everything else hidden', () => {
-  const { $, scripts, enter, visible, focused } = setup();
-  enter('');
+test('empty and incorrect codes give a readable error and keep everything else hidden', async () => {
+  const { $, scripts, privates, enter, visible, focused } = setup();
+  await enter('   ');
   assert.match($('access-error').textContent, /enter your access code/);
-  enter('incorrect');
+  await enter('incorrect');
   assert.match($('access-error').textContent, /not recognised/);
   assert.equal($('access-code').attributes['aria-invalid'], 'true');
   assert.equal(focused(), 'access-code');
+  assert.equal($('access-submit').disabled, false);
   assert.equal(scripts.length, 0);
   assert.deepEqual(visible(), ['access-page']);
+  assert.ok(privates.every(element => element.textContent === ''), 'a wrong code reveals nothing');
   $('access-code').handlers.input();
   assert.equal($('access-error').hidden, true);
 });
 
-test('the supplied code ignores case and outer spaces, opens the menu without downloading anything and remembers this session', () => {
-  const { scripts, enter, visible, saved, focused } = setup();
-  enter(' check2026 ');
+test('the code ignores case and outer spaces, decrypts the personal details, opens the menu and remembers this session', async () => {
+  const { scripts, privates, enter, visible, saved, focused } = setup();
+  await enter(' test-code ');
   assert.deepEqual(visible(), ['hub']);
   assert.equal(scripts.length, 0, 'the menu must not start the film download');
-  assert.equal(saved(), 'CHECK2026');
+  assert.deepEqual(privates.map(element => element.textContent), [FIELDS.name, FIELDS.name, FIELDS.greeting, FIELDS.role, FIELDS.bio, FIELDS.note]);
+  assert.equal(saved(), CODE);
   assert.equal(focused(), 'hub-title');
 });
 
-test('choosing the film loads the player once, shows it, and the menu button returns', () => {
+test('the sealed file is fetched once per page and a network failure is reported without revealing anything', async () => {
+  const offline = setup({ fetchOk: false });
+  await offline.enter(CODE);
+  assert.match(offline.$('access-error').textContent, /Could not check your code/);
+  assert.notEqual(offline.$('access-code').attributes['aria-invalid'], 'true');
+  assert.deepEqual(offline.visible(), ['access-page']);
+  const online = setup();
+  await online.enter('wrong');
+  await online.enter(CODE);
+  assert.equal(online.fetches(), 1);
+});
+
+test('a browser without Web Crypto is told so', async () => {
+  const { $, enter, visible } = setup({ crypto: {} });
+  await enter(CODE);
+  assert.match($('access-error').textContent, /up-to-date browser/);
+  assert.deepEqual(visible(), ['access-page']);
+});
+
+test('choosing the film loads the player once, shows it, and the menu button returns', async () => {
   const { $, scripts, enter, click, visible, location, focused } = setup();
-  enter('check2026');
+  await enter(CODE);
   click('open-film');
   assert.equal(location.hash, '#film');
   assert.equal(scripts.length, 1);
@@ -109,9 +153,9 @@ test('choosing the film loads the player once, shows it, and the menu button ret
   assert.deepEqual(visible(), ['experience']);
 });
 
-test('choosing the presentation loads its script rather than the film, and the two link to each other', () => {
+test('choosing the presentation loads its script rather than the film, and the two link to each other', async () => {
   const { scripts, enter, click, visible, location, focused } = setup();
-  enter('check2026');
+  await enter(CODE);
   click('open-presentation');
   assert.equal(location.hash, '#slide-1');
   assert.equal(scripts[0].src, 'presentation.js');
@@ -133,37 +177,42 @@ test('choosing the presentation loads its script rather than the film, and the t
   assert.deepEqual(visible(), ['hub']);
 });
 
-test('a link straight to a page or to the film opens it once the code is entered', () => {
+test('a link straight to a page or to the film opens it once the code is entered', async () => {
   const pageLink = setup({ hash: '#slide-4' });
-  assert.equal(pageLink.scripts.length, 0, 'still locked');
-  pageLink.enter('check2026');
+  await pageLink.enter(CODE);
   assert.equal(pageLink.scripts[0].src, 'presentation.js');
   pageLink.scripts[0].onload();
   assert.deepEqual(pageLink.visible(), ['presentation']);
   const filmLink = setup({ hash: '#film' });
-  filmLink.enter('check2026');
+  await filmLink.enter(CODE);
   assert.equal(filmLink.scripts[0].src, 'app.js');
 });
 
-test('only a session matching the current code can reopen the menu', () => {
-  const remembered = setup({ saved: 'CHECK2026' });
+test('a remembered session reopens the menu only if its code still decrypts the current file', async () => {
+  const remembered = setup({ saved: CODE });
+  await settle();
   assert.deepEqual(remembered.visible(), ['hub']);
   assert.equal(remembered.scripts.length, 0);
-  assert.deepEqual(setup({ saved: 'OLD-CODE' }).visible(), ['access-page']);
+  assert.equal(remembered.privates[0].textContent, FIELDS.name);
+  const stale = setup({ saved: 'OLD-CODE' });
+  await settle();
+  assert.deepEqual(stale.visible(), ['access-page']);
+  assert.equal(stale.$('access-error').hidden, true, 'a stale session fails quietly');
+  assert.equal(stale.$('access-submit').disabled, false);
 });
 
-test('entry works when browser storage is unavailable', () => {
+test('entry works when browser storage is unavailable', async () => {
   const { enter, click, scripts, visible } = setup({ blockedStorage: true });
-  enter('check2026');
+  await enter(CODE);
   assert.deepEqual(visible(), ['hub']);
   click('open-film');
   scripts[0].onload();
   assert.deepEqual(visible(), ['experience']);
 });
 
-test('a script download failure returns to the menu with an error and can be retried', () => {
+test('a script download failure returns to the menu with an error and can be retried', async () => {
   const { $, scripts, enter, click, visible } = setup();
-  enter('check2026');
+  await enter(CODE);
   click('open-film');
   scripts[0].onerror();
   assert.equal(scripts[0].removed, true);

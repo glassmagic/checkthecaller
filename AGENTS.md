@@ -43,7 +43,9 @@ netlify api listSiteDeploys --data '{"site_id":"bbc760d7-a824-4ee4-9035-3de1f74e
 gh pr view <number> --repo glassmagic/checkthecaller --json state,isDraft,statusCheckRollup
 ```
 
-Compare `context`, `review_id`, `commit_ref`, `state` and `error_message` with the intended PR or production commit. A successful webhook response alone does nSetup status checked on 7 September 2026 (recheck before treating it as current):
+Compare `context`, `review_id`, `commit_ref`, `state` and `error_message` with the intended PR or production commit. A successful webhook response alone does not prove that Netlify created a build. Do not trigger repeated production builds just to test documentation changes. For routine low-risk changes, hand over the PR promptly; wait for a preview when deployment is the task or the change warrants it.
+
+Setup status checked on 7 September 2026 (recheck before treating it as current):
 
 - Automatic production deploys from `main` are confirmed working. After re-linking the repository in Netlify (which replaced the stale legacy webhook with the GitHub App event path), a push of `b63af74` at 21:01:29Z produced a Netlify build at 21:01:30Z with no manual trigger. Before the re-link, PR #1 (`d164a6e`) and PR #2 (`cdbc633`) merged without triggering any build and were deployed manually.
 - Manual fallback if a merge does not build within a minute: `netlify api createSiteBuild --data '{"site_id":"bbc760d7-a824-4ee4-9035-3de1f74e4ac3"}'`. This builds on Netlify from the repository's `main`; nothing is uploaded from the local machine. Prefer it over `netlify deploy --build --prod`, which publishes the local working tree and uploads the ~170 MB `dist`.
@@ -51,9 +53,6 @@ Compare `context`, `review_id`, `commit_ref`, `state` and `error_message` with t
 - Automatic PR Deploy Previews are confirmed working since the re-link: PR #3 received a `deploy-preview` deploy (`review_id` 3) within 30 seconds of its push, with no manual trigger. PR #2 predates the re-link and received none.
 - `https://checkthecaller.co.uk` passes HTTPS validation and returns HTTP 200. Do not disable certificate verification.
 - No deployment setup work is outstanding. Do not re-verify or re-link unless a merge or PR fails to build.
-
-ow passes HTTPS validation and returns HTTP 200. The earlier certificate issue is resolved. Do not disable certificate verification.
-- Update these setup notes when the outstanding checks are resolved, so future agents do not repeat finished work.
 
 ## Work and checks
 
@@ -79,6 +78,7 @@ ow passes HTTPS validation and returns HTTP 200. The earlier certificate issue i
 
 - The presentation in `index.html` (`#presentation`, pages `#slide-1` to `#slide-12`) is the HTML version of `Staying-Safer-in-a-Digital-World.pptx`. Keep its wording, page order and page count matching the deck unless the user supplies a new deck. The `.pptx` is reference material only (project root, if present) and is never copied into `dist`.
 - `access.js` owns the menu and routing: the address hash is the single source of truth (`#film`, `#slide-N`, `#menu`), and each part's script (`app.js`, `presentation.js`) loads only when first chosen. Opening the presentation must never start a video download. `presentation.js` only navigates pages.
+- Every screen sits on one canvas: the teal ground and soft shapes are `body` and its pseudo-elements, with white cards on top. Controls placed directly on the canvas use the `.text-on-dark` / `.deck-nav` styles. The slide diagrams are CSS connectors and one inline SVG (see the page comments in `styles.css`); they are hidden below 650px, where cards stack.
 - The site's palette is sampled from the slides and lives in `:root` in `styles.css` (teal `#0f7675`/`#05726d`, orange `#e4562e`, yellow `#f6b93c`, purple `#6a4d8f`, green `#2d9f5a`, charcoal text `#1e2c2c`, and the pale mint/peach/lavender/leaf/cream card tints). Reuse those tokens; do not reintroduce the earlier lime accent or serif headings.
 - Icons are inline SVG `<symbol>`s at the top of `index.html`, used through `<use href="#i-name">`. Add to that sprite rather than adding image files or emoji.
 - The film's copy uses the presentation's language: the choice is *say yes* versus *say no, hang up and check*; warning signs cite the three responses; the advice page is *Stop, check, report, ask*; the closing line is *Enlightened, not frightened*. Keep the film and the presentation saying the same thing when either changes.
@@ -88,7 +88,7 @@ ow passes HTTPS validation and returns HTTP 200. The earlier certificate issue i
 
 - Use uv for Python environments and dependencies. Commit `pyproject.toml`, `uv.lock` and `.python-version`; keep `.venv` ignored. Make commands use `uv run --locked`. Pillow belongs to the optional `media` group, never normal builds.
 - `requirements.txt` bootstraps only the pinned uv executable through Netlify's Python dependency installer. Keep application dependencies in `pyproject.toml` / `uv.lock`. Preserve the remote `make build` / `dist` settings, and verify a real Netlify build after changing dependency management.
-- `access.js` owns the shared code (`CHECK2026`, case-insensitive on entry). The landing page is initially visible and the film hidden. Load `app.js` only after the correct code or a matching session value. Never start video downloads while entry is pending.
-- The gate is not authentication: the static code, page and video files remain public. Do not describe it as private or secure access. A stronger access requirement needs a separate hosting/authentication design.
+- The shared code is stored nowhere in the repository or the site: entering it decrypts `speaker.enc.json` (the presenter's name, greeting, role, biography and closing line), sealed by `scripts/private.cjs` with PBKDF2-SHA256 and AES-GCM. `access.js` mirrors that derivation; keep the two in step. The plain text lives in ignored `private/speaker.json`; `make private` re-seals it and asks for the code. Never write the code or the plain-text details into any committed file, test, commit message or PR, and never commit `private/speaker.json`; tests seal their own fixture with a throwaway code. The landing page is initially visible and everything else hidden; `app.js` loads only after the film is chosen.
+- The gate is not authentication: the pages and video files remain public, and a short code can be guessed offline against the sealed file. Do not describe it as private or secure access. A stronger access requirement needs a separate hosting/authentication design.
 - Keep the audience in mind: visible code entry, readable error messages, large buttons and keyboard access. Do not use emoji in the interface. Use SVG or CSS shapes for play/pause icons.
 - The safe-steps wording is “Wait five minutes before you call your bank.” Avoid “calling back”, which could imply returning the scammer's call.
