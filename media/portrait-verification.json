@@ -1,0 +1,50 @@
+[
+  {
+    "branch": "right",
+    "checked_frames": [
+      0,
+      103,
+      104,
+      184,
+      185,
+      343,
+      344,
+      719,
+      720,
+      1209,
+      1210,
+      1343,
+      1344,
+      1450,
+      1451,
+      2038
+    ],
+    "max_mean_rgb_error": 2.077,
+    "audio_packets_identical": true
+  },
+  {
+    "branch": "wrong",
+    "checked_frames": [
+      0,
+      103,
+      104,
+      184,
+      185,
+      343,
+      344,
+      719,
+      720,
+      1047,
+      1048,
+      1103,
+      1104,
+      1634,
+      1635,
+      1770,
+      1771,
+      2160
+    ],
+    "max_mean_rgb_error": 2.077,
+    "audio_packets_identical": true
+  }
+]
