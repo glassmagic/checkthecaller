@@ -1,0 +1,319 @@
+{
+  "fps": 24,
+  "source_size": [
+    1280,
+    720
+  ],
+  "output_size": [
+    576,
+    1024
+  ],
+  "description": "Zero-based frames; shot end is exclusive. Poses are [absolute frame, crop centre x, crop width]. Interpolate within a shot only. Preserve the full source height; use a soft inset where face, phone or card cannot fit a 9:16 crop. Prefer a fixed crop width within each shot; pan only to follow action. Widen only where separated phone/card and face require it. The source itself contains camera zooms.",
+  "shared": [
+    {
+      "start": 0,
+      "end": 104,
+      "subject": "Cottage, front door and garden",
+      "poses": [
+        [
+          0,
+          670,
+          560
+        ],
+        [
+          103,
+          670,
+          560
+        ]
+      ]
+    },
+    {
+      "start": 104,
+      "end": 185,
+      "subject": "Hands, knitting and phone at her shoulder",
+      "poses": [
+        [
+          104,
+          575,
+          600
+        ],
+        [
+          184,
+          575,
+          600
+        ]
+      ]
+    },
+    {
+      "start": 185,
+      "end": 344,
+      "subject": "Mrs Hartly in her chair with phone and knitting",
+      "poses": [
+        [
+          185,
+          800,
+          440
+        ],
+        [
+          343,
+          770,
+          440
+        ]
+      ]
+    },
+    {
+      "start": 344,
+      "end": 720,
+      "subject": "Face and handset during the unexpected call",
+      "poses": [
+        [
+          344,
+          580,
+          800
+        ],
+        [
+          719,
+          580,
+          800
+        ]
+      ]
+    }
+  ],
+  "right": {
+    "source": "ScamProtection_Right.m4v",
+    "output": "assets/portrait-right.mp4",
+    "frames": 2039,
+    "shots": [
+      {
+        "start": 720,
+        "end": 1210,
+        "subject": "Face and handset; steady size, following the handset at the end",
+        "poses": [
+          [
+            720,
+            580,
+            800
+          ],
+          [
+            1176,
+            580,
+            800
+          ],
+          [
+            1209,
+            510,
+            800
+          ]
+        ]
+      },
+      {
+        "start": 1210,
+        "end": 1344,
+        "subject": "Phone, chair and reaching to the side table for the bank card",
+        "poses": [
+          [
+            1210,
+            670,
+            900
+          ],
+          [
+            1343,
+            670,
+            900
+          ]
+        ]
+      },
+      {
+        "start": 1344,
+        "end": 1451,
+        "subject": "Entire bank card and hand as she turns it over",
+        "poses": [
+          [
+            1344,
+            660,
+            900
+          ],
+          [
+            1450,
+            660,
+            900
+          ]
+        ]
+      },
+      {
+        "start": 1451,
+        "end": 2039,
+        "subject": "Independent call, putting down the phone, sitting and returning to knitting",
+        "poses": [
+          [
+            1451,
+            550,
+            700
+          ],
+          [
+            1728,
+            550,
+            700
+          ],
+          [
+            1776,
+            530,
+            700
+          ],
+          [
+            1848,
+            650,
+            700
+          ],
+          [
+            1920,
+            650,
+            700
+          ],
+          [
+            2038,
+            730,
+            700
+          ]
+        ]
+      }
+    ]
+  },
+  "wrong": {
+    "source": "ScamProtection_Wrong.m4v",
+    "output": "assets/portrait-wrong.mp4",
+    "frames": 2161,
+    "shots": [
+      {
+        "start": 720,
+        "end": 1048,
+        "subject": "Face, handset and card coming into view",
+        "poses": [
+          [
+            720,
+            580,
+            800
+          ],
+          [
+            912,
+            580,
+            800
+          ],
+          [
+            936,
+            740,
+            900
+          ],
+          [
+            984,
+            520,
+            900
+          ],
+          [
+            1047,
+            520,
+            900
+          ]
+        ]
+      },
+      {
+        "start": 1048,
+        "end": 1104,
+        "subject": "Side profile and handset in the cutaway",
+        "poses": [
+          [
+            1048,
+            1010,
+            540
+          ],
+          [
+            1103,
+            1010,
+            540
+          ]
+        ]
+      },
+      {
+        "start": 1104,
+        "end": 1635,
+        "subject": "Face and phone held apart while reading the text code",
+        "poses": [
+          [
+            1104,
+            640,
+            1280
+          ],
+          [
+            1320,
+            640,
+            1280
+          ],
+          [
+            1368,
+            580,
+            800
+          ],
+          [
+            1634,
+            580,
+            800
+          ]
+        ]
+      },
+      {
+        "start": 1635,
+        "end": 1771,
+        "subject": "Standing and walking into the kitchen",
+        "poses": [
+          [
+            1635,
+            790,
+            600
+          ],
+          [
+            1668,
+            690,
+            600
+          ],
+          [
+            1692,
+            580,
+            600
+          ],
+          [
+            1716,
+            530,
+            600
+          ],
+          [
+            1740,
+            670,
+            600
+          ],
+          [
+            1770,
+            700,
+            600
+          ]
+        ]
+      },
+      {
+        "start": 1771,
+        "end": 2161,
+        "subject": "Phone on counter, kettle and her reaction",
+        "poses": [
+          [
+            1771,
+            690,
+            1100
+          ],
+          [
+            2160,
+            690,
+            1100
+          ]
+        ]
+      }
+    ]
+  }
+}

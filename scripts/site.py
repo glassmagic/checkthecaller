@@ -20,7 +20,8 @@ import webbrowser
 ROOT = Path(__file__).resolve().parent.parent
 PUBLIC_FILES = (
     "index.html", "styles.css", "app.js", "_headers",
-    "assets/favicon.svg", "assets/poster.jpg",
+    "assets/check-the-caller.svg", "assets/check-the-caller.png", "assets/poster.jpg", "assets/poster-portrait.jpg",
+    "assets/portrait-right.mp4", "assets/portrait-wrong.mp4",
     "ScamProtection_Right.m4v", "ScamProtection_Wrong.m4v",
 )
 
@@ -148,7 +149,7 @@ def run(port, open_browser=True):
         server.server_close()
         raise
     url = f"http://127.0.0.1:{server.server_port}"
-    print(f"Serving Fraud Protect at {url}\nPress Ctrl+C to stop.", flush=True)
+    print(f"Serving Check the Caller at {url}\nPress Ctrl+C to stop.", flush=True)
     if open_browser:
         timer = threading.Timer(0.3, webbrowser.open, args=(url,))
         timer.daemon = True

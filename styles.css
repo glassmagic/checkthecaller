@@ -190,3 +190,84 @@ video { position: absolute; inset: 0; display: block; width: 100%; height: 100%;
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* Each ending screen has one job: outcome, advice, or replay choices. */
+.result-shortcuts { display: grid; gap: .65rem; margin-top: 1rem; }
+.result-shortcuts button { width: 100%; font-size: 1rem; }
+.result-actions { padding: 1rem 0 0; border: 0; background: transparent; }
+.result-actions .completion-actions { display: grid; gap: .7rem; }
+.result-actions button { width: 100%; }
+.result-navigation { min-height: 66px; }
+.result-navigation p { text-align: center; line-height: 1.3; }
+.result-navigation > p:only-child { grid-column: 1 / -1; }
+.result-navigation:has(#result-back[hidden]) { grid-template-columns: 1fr; }
+
+@media (max-width: 650px) {
+  main { padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left)); }
+  .intro-heading { padding: 0 4px 8px; gap: 3px; }
+  .intro-title .eyebrow { display: none; }
+  h1 { font-size: 1.4rem; line-height: 1.15; letter-spacing: -.035em; }
+  .lead { display: none; }
+  .player-card { border-radius: 12px; }
+  .steps li { flex-direction: row; gap: .35rem; padding: 6px 3px; font-size: .82rem; }
+  .steps li > span { width: 22px; height: 22px; font-size: .72rem; }
+  .video-stage { aspect-ratio: auto; min-height: max(22rem, calc(100svh - 176px)); }
+  /* Measure all screens from the start. At enlarged text sizes the page may
+     grow, but panels never acquire a nested scroll area or clip their controls. */
+  .complete-panel[hidden] { display: flex !important; }
+  .complete-panel { position: relative; inset: auto; }
+  .complete-panel h2 { font-size: 1.3rem; line-height: 1.25; margin-bottom: .6rem; }
+  .complete-panel p, .safety-steps li { font-size: 1rem; line-height: 1.45; }
+  .complete-panel .eyebrow { font-size: .9rem; margin-bottom: .6rem; }
+  .result-body { padding: 13px; }
+  .result-summary { padding: 0; background: transparent !important; border: 0; }
+  .result-shortcuts { gap: 10px; margin-top: 16px; }
+  .result-shortcuts button, .result-actions .completion-actions button { min-height: 48px; padding: .6rem .7rem; font-size: 1rem; }
+  .result-navigation { grid-template-columns: auto minmax(0, 1fr) auto; padding: 8px 12px; gap: 8px; min-height: 65px; }
+  .result-navigation p { font-size: .82rem; }
+  .result-navigation button { min-height: 48px; padding: .5rem .7rem; white-space: nowrap; }
+  .result-navigation > button:first-child, .result-navigation > button:last-child { min-width: 0; }
+  .result-actions { padding: 8px 0 0; }
+  .result-takeaway { padding: .7rem; }
+  .safety-steps { margin-bottom: .6rem; }
+  .safety-steps li { margin-bottom: .5rem; }
+  .result-page .advice-source { font-size: .9rem; }
+  .result-page[hidden] { pointer-events: none; }
+  .start-screen { padding: 20px; }
+  .start-content { width: 100%; gap: 12px; }
+  .film-label { font-size: 1.45rem; }
+  .start-button { justify-content: center; width: 100%; min-height: 56px; font-size: 1.1rem; }
+  .start-content p { font-size: .86rem; line-height: 1.4; }
+  .choice-panel { padding: 20px 16px; overflow: visible; }
+  .choice-panel h2 { font-family: Arial, Helvetica, sans-serif; font-size: 1.65rem; line-height: 1.15; font-weight: 700; }
+  .choices { gap: 12px; margin: 20px 0 16px; }
+  .choice { min-height: 104px; padding: 14px; gap: 10px; border-radius: 10px; }
+  .choice strong { font-size: 1.08rem; line-height: 1.35; }
+  .story-panel .reassurance { font-size: .9rem; line-height: 1.4; }
+  .controls { display: grid; grid-template-columns: auto 1fr auto; gap: 0 10px; padding: 2px 10px 4px; min-height: 74px; }
+  .progress { grid-column: 1 / -1; grid-row: 1; width: 100%; margin: 0; height: 24px; }
+  #play-pause { grid-column: 1; grid-row: 2; }
+  #mute { grid-column: 3; grid-row: 2; }
+  .time { grid-column: 2; grid-row: 2; width: auto; text-align: center; font-size: .82rem; }
+  .control-button, .sound { min-height: 44px; min-width: 64px; font-size: .9rem; padding: 6px 10px; }
+  .sound { min-width: 104px; white-space: nowrap; }
+  /* Controls keep their space when disabled so the page does not jump. */
+  .player-card[data-phase="choice"] .controls, .player-card[data-phase="complete"] .controls { visibility: hidden; }
+  .commentary-banner { min-height: 54px; padding: 6px 10px; }
+  .commentary-banner > span { max-width: 10rem; font-size: .83rem; line-height: 1.3; }
+  .commentary-banner button { font-size: .83rem; }
+  .commentary-panel { inset: 54px 0 0; max-height: none; padding: 18px 16px; border-top: 0; box-shadow: none; overflow: visible; justify-content: center; }
+  .commentary-copy { overflow: visible; flex: 0 0 auto; padding: 0; }
+  .commentary-copy .eyebrow { font-size: .78rem; line-height: 1.4; }
+  .commentary-copy h2 { font-size: 1.3rem; line-height: 1.25; margin-bottom: 12px; }
+  .commentary-copy > p:last-child { font-size: 1rem; line-height: 1.5; }
+  .commentary-actions { display: grid; width: 100%; justify-content: stretch; gap: 12px; margin-top: 16px; }
+  .commentary-actions > p { display: none; }
+  .commentary-actions > div { display: grid; }
+  #hold-commentary { display: none; }
+  #continue-commentary { width: 100%; min-height: 52px; font-size: 1.05rem; }
+}
+
+@media (max-width: 650px) and (orientation: landscape) {
+  .video-stage { aspect-ratio: 16 / 9; min-height: 24rem; }
+}
