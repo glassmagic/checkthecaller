@@ -1,0 +1,31 @@
+{
+  "plan_sha256": "fe51bfd131652b0cc300be1395f04cc5303b0fe5fff7d62c0587e5c2d2e5f3d3",
+  "videos": [
+    {
+      "source": "ScamProtection_Right.m4v",
+      "source_sha256": "9d3697d6ed5de146ac6292a5f84600abdf646810c7c2b1ff73f4758f65ea5c32",
+      "output": "assets/portrait-right.mp4",
+      "output_sha256": "4c9d69bdb0356183a8a5582e900724832f7acfcdc6c87f86fc2c60568b62f7e0",
+      "frames": 2039,
+      "fps": 24,
+      "size": [
+        576,
+        1024
+      ],
+      "bytes": 11628374
+    },
+    {
+      "source": "ScamProtection_Wrong.m4v",
+      "source_sha256": "2a6b1c3874da58557f3038b80dd1fbb3db5d0ae2c3cdbd7e6078fea482ba7aed",
+      "output": "assets/portrait-wrong.mp4",
+      "output_sha256": "1ca0a6ce57771946fff241e14b2a6e83fa20b22e692392f1a94bb9a11b00f7ba",
+      "frames": 2161,
+      "fps": 24,
+      "size": [
+        576,
+        1024
+      ],
+      "bytes": 12407991
+    }
+  ]
+}

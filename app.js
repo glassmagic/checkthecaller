@@ -1,17 +1,22 @@
-/* No player libraries, trackers, network APIs or build dependencies. */
+/* No player libraries or trackers. Background downloads stay on this site. */
 (() => {
   'use strict';
   const CHOICE_TIME = 30;
   const SOURCES = { right: 'ScamProtection_Right.m4v', wrong: 'ScamProtection_Wrong.m4v' };
+  const PORTRAIT_SOURCES = { right: 'assets/portrait-right.mp4', wrong: 'assets/portrait-wrong.mp4' };
+  const portraitQuery = window.matchMedia?.('(max-width: 650px) and (orientation: portrait)');
+  const compactQuery = window.matchMedia?.('(max-width: 650px)');
+  const isCompact = () => Boolean(compactQuery?.matches);
+  const sourceFor = branch => (portraitQuery?.matches ? PORTRAIT_SOURCES : SOURCES)[branch];
   const LABELS = { right: 'End the call and check independently', wrong: 'Follow the caller’s instructions' };
   // Seconds in the original unsafe video, aligned to the end of each request.
   const COMMENTARY_CUES = [
-    { time: 11.5, title: 'An unexpected call from “the bank”', text: 'He says he is from the fraud team, but that does not prove who he is. Knowing Mrs Hartly’s name does not make the call genuine.' },
-    { time: 16.9, title: 'Fear makes the situation feel urgent', text: 'Saying someone has tried to take her money creates alarm. That pressure can make her follow instructions before checking whether the caller is genuine.' },
-    { time: 42.8, title: 'He asks for the full card number', text: 'He presents the long card number as a security check. Giving card details to an unexpected caller can help them make fraudulent payments. Hang up and check independently.' },
-    { time: 51.9, title: 'He asks her to read out a text code', text: 'A one-time code can approve a payment or give access to an account. Do not read it to an unexpected caller, even if they claim to be protecting you.' },
-    { time: 58.35, title: 'He dismisses the “do not share” warning', text: 'Mrs Hartly notices the warning, but he says it does not apply to him. The warning still applies. Someone asking you to ignore it is a serious danger sign.' },
-    { time: 64.9, title: 'He claims he will move her money to safety', text: 'A “safe account” is a common scam story. Your bank will never ask you to transfer money to one. End the call and contact the bank yourself.' },
+    { time: 11.5, title: 'An unexpected call from “the bank”', text: 'He says he is from the fraud team, but that does not prove who he is. Knowing Mrs Hartly’s name does not make the call genuine.', mobileText: "He calls unexpectedly and claims to be from the bank. Knowing her name does not prove who he is." },
+    { time: 16.9, title: 'Fear makes the situation feel urgent', text: 'Saying someone has tried to take her money creates alarm. That pressure can make her follow instructions before checking whether the caller is genuine.', mobileText: "He says her money is at risk. Fear and pressure can stop her taking time to check the call." },
+    { time: 42.8, title: 'He asks for the full card number', text: 'He presents the long card number as a security check. Giving card details to an unexpected caller can help them make fraudulent payments. Hang up and check independently.', mobileText: "He asks for the long card number as a “security check”. An unexpected caller could use these details to commit fraud." },
+    { time: 51.9, title: 'He asks her to read out a text code', text: 'A one-time code can approve a payment or give access to an account. Do not read it to an unexpected caller, even if they claim to be protecting you.', mobileText: "A text code can approve a payment or let someone into an account. Never read it to an unexpected caller." },
+    { time: 58.35, title: 'He dismisses the “do not share” warning', text: 'Mrs Hartly notices the warning, but he says it does not apply to him. The warning still applies. Someone asking you to ignore it is a serious danger sign.', mobileText: "The text says “do not share”. He tells her to ignore that warning. The warning applies to him too." },
+    { time: 64.9, title: 'He claims he will move her money to safety', text: 'A “safe account” is a common scam story. Your bank will never ask you to transfer money to one. End the call and contact the bank yourself.', mobileText: "Your bank will never ask you to move money to a “safe account”. Hang up and call your bank yourself." },
   ];
   const COMMENTARY_PAUSE_SECONDS = 12;
   const $ = (id) => document.getElementById(id);
@@ -19,6 +24,13 @@
   let phase = 'start';
   let selected = null;
   let loaded = 'right';
+  let loadedSource = sourceFor('right');
+  const preparedSources = new Map();
+  const backgroundLoads = new Map();
+  const attemptedSources = new Set();
+  let resumeAfterSeek = true;
+  video.src = loadedSource;
+  video.poster = portraitQuery?.matches ? 'assets/poster-portrait.jpg' : 'assets/poster.jpg';
   let pendingSeek = null;
   let generation = 0;
   let frameId = null;
@@ -28,10 +40,36 @@
   let commentarySeconds = 0;
   let lastCommentaryTime = 0;
   let resultPage = 0;
-  const RESULT_HEADINGS = ['complete-title', 'warning-caller-title', 'warning-pressure-title', 'warning-account-title', 'safe-next-step-title'];
+  const RESULT_HEADINGS = ['complete-title', 'warning-caller-title', 'warning-pressure-title', 'warning-account-title', 'safe-next-step-title', 'replay-title'];
   const watched = new Set();
   const isCommentary = () => ['commentary', 'commentary-pause'].includes(phase);
   const isPlayback = () => ['intro', 'ending', 'commentary'].includes(phase);
+
+  function cancelBackgroundLoad(source) {
+    if (backgroundLoads.has(source)) attemptedSources.delete(source);
+    backgroundLoads.get(source)?.abort();
+    backgroundLoads.delete(source);
+  }
+  async function prepareOtherEnding() {
+    if (!window.fetch || !window.URL?.createObjectURL || !window.AbortController) return;
+    const source = sourceFor(loaded === 'wrong' ? 'right' : 'wrong');
+    if (preparedSources.has(source) || attemptedSources.has(source)) return;
+    attemptedSources.add(source);
+    const controller = new window.AbortController();
+    backgroundLoads.set(source, controller);
+    try {
+      // Wait for canplaythrough before this low-priority request. Use the finished
+      // local blob directly so selecting an ending doesn't rely on range-cache reuse.
+      const response = await window.fetch(source, { cache: 'force-cache', priority: 'low', signal: controller.signal });
+      if (!response.ok) return;
+      const blob = await response.blob();
+      if (!controller.signal.aborted && blob.size) preparedSources.set(source, window.URL.createObjectURL(blob));
+    } catch (_error) {
+      // Warming is optional; normal media loading and Retry still work offline or on failure.
+    } finally {
+      if (backgroundLoads.get(source) === controller) backgroundLoads.delete(source);
+    }
+  }
 
   const timestamp = (seconds) => {
     const value = Math.max(0, Math.floor(seconds || 0));
@@ -61,6 +99,7 @@
     syncProgress();
   }
   function render() {
+    $('player-card').setAttribute('data-phase', phase);
     $('start-screen').hidden = phase !== 'start';
     $('choice-panel').hidden = phase !== 'choice';
     $('complete-panel').hidden = phase !== 'complete';
@@ -75,10 +114,12 @@
   }
   function renderResultPages() {
     RESULT_HEADINGS.forEach((_heading, index) => { $(`result-page-${index}`).hidden = index !== resultPage; });
-    $('result-page-count').textContent = `${resultPage + 1} of ${RESULT_HEADINGS.length}`;
     $('result-back').disabled = resultPage === 0;
-    $('result-next').textContent = resultPage === RESULT_HEADINGS.length - 1 ? 'Back to result' : 'Next →';
-    $('result-actions').hidden = resultPage !== 0;
+    $('result-next').textContent = resultPage === RESULT_HEADINGS.length - 1 ? 'Result' : 'Next →';
+    $('result-actions').hidden = resultPage !== 5;
+    $('result-next').hidden = resultPage === 0;
+    $('result-back').hidden = resultPage === 0;
+    $('result-page-count').textContent = resultPage === 0 ? 'Your result' : resultPage === 5 ? 'Watch again' : `${resultPage} of 4 · What to remember`;
   }
   function changeResultPage(direction) {
     if (phase !== 'complete') return;
@@ -151,7 +192,7 @@
     pendingSeek = null;
     video.currentTime = target;
     syncControls();
-    play();
+    if (resumeAfterSeek && isPlayback()) play();
   }
   function loadAt(branch, time) {
     generation++;
@@ -159,15 +200,47 @@
     stopFrameWatch();
     $('error-panel').hidden = true;
     pendingSeek = time;
+    resumeAfterSeek = true;
     notice('Loading the story…');
-    if (loaded !== branch || video.error) {
+    const source = sourceFor(branch);
+    if (loaded !== branch || loadedSource !== source || video.error) {
+      cancelBackgroundLoad(source);
       loaded = branch;
-      video.src = SOURCES[branch];
+      loadedSource = source;
+      video.src = preparedSources.get(source) || source;
       video.load();
     }
     render();
     seekWhenReady();
   }
+  function changePresentation() {
+    video.poster = portraitQuery?.matches ? 'assets/poster-portrait.jpg' : 'assets/poster.jpg';
+    const source = sourceFor(loaded || selected || 'right');
+    if (source === loadedSource) return;
+    const time = pendingSeek ?? video.currentTime;
+    const resume = pendingSeek !== null ? resumeAfterSeek : isPlayback() && !video.paused;
+    generation++;
+    video.pause();
+    stopFrameWatch();
+    pendingSeek = time;
+    resumeAfterSeek = resume;
+    loadedSource = source;
+    for (const pendingSource of backgroundLoads.keys()) cancelBackgroundLoad(pendingSource);
+    video.src = preparedSources.get(source) || source;
+    video.load();
+    if (phase !== 'start') notice('Adjusting the film…');
+    if (phase === 'commentary-pause') holdCommentary();
+    syncControls();
+  }
+  portraitQuery?.addEventListener('change', changePresentation);
+  compactQuery?.addEventListener('change', () => {
+    if (activeCue) {
+      $('commentary-description').textContent = isCompact() ? activeCue.mobileText : activeCue.text;
+      $('commentary-label').textContent = isCompact() ? `Warning ${nextCue} of ${COMMENTARY_CUES.length} · Film paused` : `WARNING SIGN ${nextCue} OF ${COMMENTARY_CUES.length} · FILM PAUSED`;
+    }
+    if (isCompact()) holdCommentary();
+  });
+
   function start() {
     resetCommentary();
     selected = null;
@@ -201,8 +274,8 @@
       ? 'Mrs Hartly kept her money safe.'
       : 'Mrs Hartly lost all the money in her current account.';
     $('complete-description').textContent = safe
-      ? 'She ended the call and checked independently. This helped her avoid the scam, and the money in her current account stayed safe.'
-      : 'She followed the scammer’s instructions, and her current account was emptied. A convincing scam can catch anyone out.';
+      ? 'She hung up and called her bank herself.'
+      : 'The caller was a scammer. She trusted him.';
     $('other-ending').innerHTML = `${watched.size === 2 ? 'Watch the other ending again' : 'Watch the other ending'} <span aria-hidden="true">→</span>`;
     $('other-note').textContent = watched.size === 2
       ? 'You’ve now seen both endings. You can revisit either one or start again.'
@@ -231,7 +304,7 @@
     selected = 'wrong';
     phase = 'commentary';
     loadAt('wrong', 0);
-    announce('Replaying the unsafe version with six on-screen explanations. Each pauses the film for twelve seconds. Select Keep paused if you need longer.');
+    announce(isCompact() ? 'Replaying the unsafe version with six explanations. Read each warning, then select Continue film.' : 'Replaying the unsafe version with six on-screen explanations. Each pauses the film for twelve seconds. Select Keep paused if you need longer.');
     focus('video-stage');
   }
   function holdCommentary() {
@@ -271,25 +344,28 @@
     video.currentTime = activeCue.time;
     lastCommentaryTime = activeCue.time;
     notice('');
-    $('commentary-label').textContent = `WARNING SIGN ${nextCue} OF ${COMMENTARY_CUES.length} · FILM PAUSED`;
+    $('commentary-label').textContent = isCompact() ? `Warning ${nextCue} of ${COMMENTARY_CUES.length} · Film paused` : `WARNING SIGN ${nextCue} OF ${COMMENTARY_CUES.length} · FILM PAUSED`;
     $('commentary-title').textContent = activeCue.title;
-    $('commentary-description').textContent = activeCue.text;
+    const explanation = isCompact() ? activeCue.mobileText : activeCue.text;
+    $('commentary-description').textContent = explanation;
     $('hold-commentary').textContent = 'Keep paused';
     $('hold-commentary').setAttribute('aria-pressed', 'false');
     $('commentary-panel').scrollTop = 0;
     $('commentary-copy').scrollTop = 0;
     render();
-    announce(`${activeCue.title}. ${activeCue.text} The film will continue in twelve seconds. Select Keep paused for more time.`);
+    announce(`${activeCue.title}. ${explanation} ${isCompact() ? 'Select Continue film when you are ready.' : 'The film will continue in twelve seconds. Select Keep paused for more time.'}`);
     focus('commentary-title');
     commentarySeconds = COMMENTARY_PAUSE_SECONDS;
     clearCommentaryTimer();
-    if (document.hidden) holdCommentary();
+    if (document.hidden || isCompact()) holdCommentary();
     else scheduleCommentaryResume();
   }
 
   $('start').addEventListener('click', start);
   $('restart').addEventListener('click', start);
   $('watch-commentary').addEventListener('click', startCommentary);
+  $('result-warnings').addEventListener('click', () => { if (phase === 'complete') { resultPage = 0; changeResultPage(1); } });
+  $('result-replays').addEventListener('click', () => { if (phase === 'complete') { resultPage = 4; changeResultPage(1); } });
   $('result-back').addEventListener('click', () => changeResultPage(-1));
   $('result-next').addEventListener('click', () => changeResultPage(1));
   $('hold-commentary').addEventListener('click', holdCommentary);
@@ -315,10 +391,17 @@
     if (guided) { clearCommentaryTimer(); activeCue = null; phase = 'commentary'; }
     else if (phase !== 'ending') phase = 'intro';
     const branch = selected || 'right';
+    const source = sourceFor(branch);
+    if (preparedSources.has(source)) {
+      window.URL.revokeObjectURL(preparedSources.get(source));
+      preparedSources.delete(source);
+    }
     loaded = null; // Force a fresh request even for network failures without MediaError.
     loadAt(branch, target);
   });
   video.addEventListener('loadedmetadata', () => { seekWhenReady(); syncProgress(); });
+  video.addEventListener('canplaythrough', prepareOtherEnding);
+  video.addEventListener('seeked', () => { if (pendingSeek === null && !video.error) notice(''); });
   video.addEventListener('durationchange', syncProgress);
   video.addEventListener('timeupdate', () => { checkBoundary(); syncProgress(); });
   video.addEventListener('seeking', () => {

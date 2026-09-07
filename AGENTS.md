@@ -60,3 +60,14 @@ Setup status recorded on 7 September 2026 (recheck before treating it as current
 - Run `make build` and `git diff --check` before delivery. Describe the checks actually performed; simulated media tests do not establish real-browser playback.
 - Check the Netlify deploy record for real build errors, and verify the matching commit when reporting a deployment as ready. Do not treat a local build or successful Git push as proof of deployment.
 - Commentary cue times refer to the original unsafe video. Update them only against the dialogue, not by guessing.
+
+## Mobile video and interface
+
+- Keep the Check the Caller page title, bookmark icons and home-screen title consistent. Existing saved bookmarks may retain a name previously chosen by the viewer.
+- Upright phones (max-width 650px) use the pre-rendered `assets/portrait-*.mp4` files; desktop and landscape retain the source `.m4v` files. Preserve playback position, chosen branch, commentary state and pauses when switching orientation.
+- Mobile reframing lives in `media/portrait-framing.json`: zero-based 24 fps frames, exclusive shot ends, poses `[frame, centre x, width]`. Prefer closer, steady framing with a fixed width within each shot. Pan only to follow action; widen only to retain separated phone/card/face details. Do not add arbitrary zoom pulses or interpolate across hard cuts.
+- Generate derivatives offline with `python3 scripts/render_portrait.py --proof-dir /tmp/portrait-proof` (Pillow + FFmpeg/ffprobe), inspect the sheets, then run `python3 scripts/verify_portrait.py`. Commit the framing plan, manifest, verification report, portrait poster and both MP4s together. Preserve 2039 right / 2161 wrong frames at 24 fps, the 30-second branch point and original AAC packets. Keep these optional rendering dependencies out of Netlify builds.
+- Result screens reserve their largest page before playback. Avoid nested scroll areas and automatic scrolling. Check choice, all result pages and all commentary pauses at 320×568 and a larger portrait viewport. Keep buttons readable and reachable without reducing text to fit.
+- Compact commentary stays paused until Continue film; desktop retains the 12-second timer with Keep paused. Preserve the existing cue times and all six explanations.
+- Background preloading begins on `canplaythrough`, fetches only the other ending for the current presentation, and uses the completed local blob on selection. Never wait for an unfinished background download before starting the selected film. Keep normal loading/Retry as fallback and cancel obsolete requests on rotation.
+- `_headers` must permit `connect-src 'self'` and `media-src 'self' blob:` for preloading. Do not broaden these to external domains. Validate actual cached playback in the browser, as simulated media tests alone cannot verify decoding or response headers.

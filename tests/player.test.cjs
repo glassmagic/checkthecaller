@@ -8,7 +8,7 @@ const root = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const script = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 
-function setup({ ready = true, frames = true } = {}) {
+function setup({ ready = true, frames = true, portrait = false, compact = portrait, network = false } = {}) {
   const elements = new Map();
   let focused;
   class Element {
@@ -44,11 +44,23 @@ function setup({ ready = true, frames = true } = {}) {
     video.requestVideoFrameCallback = callback => { video.frameCallback = callback; return 1; };
     video.cancelVideoFrameCallback = () => { video.frameCallback = null; };
   }
+  const queries = new Map();
+  function matchMedia(query) {
+    const item = { matches: query.includes('orientation') ? portrait : compact, callbacks: [], addEventListener(_event, fn) { this.callbacks.push(fn); } };
+    queries.set(query, item); return item;
+  }
+  function rotate(isPortrait) {
+    for (const [query, item] of queries) {
+      const matches = isPortrait;
+      if (item.matches !== matches) { item.matches = matches; for (const fn of item.callbacks) fn({ matches }); }
+    }
+  }
   let interval;
   let clock = 0;
   let timerId = 0;
   const timers = new Map();
   const documentEvents = {};
+  const requests = [];
   const documentState = {
     hidden: false,
     getElementById: $,
@@ -57,6 +69,14 @@ function setup({ ready = true, frames = true } = {}) {
   vm.runInNewContext(script, {
     document: documentState,
     window: {
+      matchMedia,
+      ...(network ? {
+        AbortController,
+        URL: { createObjectURL: blob => `blob:prepared-${blob.name}`, revokeObjectURL() {} },
+        fetch(source, options) {
+          return new Promise((resolve, reject) => { requests.push({ source, options, resolve, reject }); });
+        },
+      } : {}),
       setInterval(callback) { interval = callback; },
       setTimeout(callback, delay) { const id = ++timerId; timers.set(id, { callback, at: clock + delay }); return id; },
       clearTimeout(id) { timers.delete(id); },
@@ -77,12 +97,12 @@ function setup({ ready = true, frames = true } = {}) {
   function visibility(hidden) { documentState.hidden = hidden; documentEvents.visibilitychange(); }
   function metadata() {
     video.readyState = 1;
-    video.duration = video.src?.includes('Wrong') ? 90.041667 : 84.958333;
+    video.duration = /wrong/i.test(video.src || '') ? 90.041667 : 84.958333;
     video.emit('loadedmetadata');
   }
   function decision() { $('start').click(); video.currentTime = 30; video.emit('timeupdate'); }
   function end() { video.currentTime = video.duration; video.pause(); video.emit('ended'); }
-  return { $, video, metadata, decision, end, advance, visibility, focused: () => focused, tick: () => interval(), reject: name => { nextError = Object.assign(new Error(name), { name }); } };
+  return { $, video, metadata, decision, end, advance, visibility, rotate, requests, focused: () => focused, tick: () => interval(), reject: name => { nextError = Object.assign(new Error(name), { name }); } };
 }
 
 test('starts without autoplay and pauses at 30 seconds until a choice is made', () => {
@@ -358,35 +378,133 @@ test('media keyboard commands cannot bypass a commentary pause', () => {
   assert.equal($('commentary-panel').hidden, false);
 });
 
-test('ending explanations page through all notes without moving focus by scrolling', () => {
+test('ending has short outcome, advice and replay screens without page scrolling', () => {
   const { $, decision, end, focused } = setup();
   decision(); $('choose-right').click(); end();
   assert.equal($('result-page-0').hidden, false);
-  assert.equal($('result-back').disabled, true);
-  assert.equal($('result-actions').hidden, false);
-  const titles = ['complete-title', 'warning-caller-title', 'warning-pressure-title', 'warning-account-title', 'safe-next-step-title'];
+  assert.equal($('result-next').hidden, true);
+  assert.equal($('result-actions').hidden, true);
+  $('result-warnings').click();
+  const titles = ['complete-title', 'warning-caller-title', 'warning-pressure-title', 'warning-account-title', 'safe-next-step-title', 'replay-title'];
   for (let page = 1; page < 5; page++) {
-    $('result-next').click();
-    for (let index = 0; index < 5; index++) assert.equal($(`result-page-${index}`).hidden, index !== page);
-    assert.equal($('result-page-count').textContent, `${page + 1} of 5`);
+    for (let index = 0; index < 6; index++) assert.equal($(`result-page-${index}`).hidden, index !== page);
+    assert.equal($('result-page-count').textContent, `${page} of 4 · What to remember`);
     assert.equal(focused(), titles[page]);
+    $('result-next').click();
   }
-  $('result-back').click();
-  assert.equal($('result-page-3').hidden, false);
-  $('result-next').click();
-  assert.equal($('result-next').textContent, 'Back to result');
-  $('result-next').click();
+  assert.equal($('result-page-5').hidden, false);
   assert.equal($('result-actions').hidden, false);
-  assert.equal($('result-back').disabled, true);
+  assert.equal($('result-next').textContent, 'Result');
+  $('result-next').click();
+  assert.equal($('result-page-0').hidden, false);
+  $('result-replays').click();
+  assert.equal($('result-page-5').hidden, false);
+  assert.equal(focused(), 'replay-title');
 });
 
 test('a new ending opens its outcome instead of retaining the previous explanation page', () => {
   const { $, decision, end, metadata } = setup();
   decision(); $('choose-right').click(); end();
-  $('result-next').click();
-  $('result-back').click();
+  $('result-replays').click();
   $('other-ending').click(); metadata(); end();
   assert.equal($('result-page-0').hidden, false);
-  assert.equal($('result-page-count').textContent, '1 of 5');
-  assert.equal($('result-actions').hidden, false);
+  assert.equal($('result-page-count').textContent, 'Your result');
+  assert.equal($('result-actions').hidden, true);
+});
+
+test('portrait playback selects only mobile assets and preserves both branch timings', () => {
+  const { $, video, metadata, decision, end } = setup({ portrait: true });
+  assert.equal(video.src, 'assets/portrait-right.mp4');
+  assert.equal(video.poster, 'assets/poster-portrait.jpg');
+  decision(); $('choose-wrong').click(); metadata();
+  assert.equal(video.src, 'assets/portrait-wrong.mp4');
+  assert.equal(video.currentTime, 30);
+  assert.equal(video.duration, 90.041667);
+  end(); $('result-replays').click(); $('other-ending').click(); metadata();
+  assert.equal(video.src, 'assets/portrait-right.mp4');
+  assert.equal(video.currentTime, 30);
+});
+
+test('rotation keeps current position, pause state and the decision gate', () => {
+  const { $, video, metadata, decision, rotate } = setup({ portrait: true });
+  $('start').click(); video.currentTime = 20; $('play-pause').click();
+  rotate(false); metadata();
+  assert.equal(video.src, 'ScamProtection_Right.m4v');
+  assert.equal(video.currentTime, 20);
+  assert.equal(video.paused, true);
+  $('play-pause').click(); video.currentTime = 25;
+  rotate(true); metadata();
+  assert.equal(video.currentTime, 25);
+  assert.equal(video.paused, false);
+  video.currentTime = 30; video.emit('timeupdate');
+  rotate(false); metadata();
+  assert.equal(video.currentTime, 30);
+  assert.equal(video.paused, true);
+  assert.equal($('choice-panel').hidden, false);
+});
+
+test('mobile commentary stays paused until Continue, including after rotation', () => {
+  const { $, video, metadata, decision, end, advance, rotate } = setup({ portrait: true });
+  decision(); $('choose-right').click(); end(); $('result-replays').click();
+  $('watch-commentary').click(); metadata();
+  video.currentTime = 12; video.emit('timeupdate'); advance(60000);
+  assert.equal(video.currentTime, 11.5);
+  assert.equal(video.paused, true);
+  assert.match($('commentary-countdown').textContent, /when you’re ready/);
+  rotate(false); metadata(); advance(60000);
+  assert.equal(video.paused, true);
+  assert.equal($('commentary-panel').hidden, false);
+  $('continue-commentary').click();
+  assert.equal(video.paused, false);
+  assert.equal(video.currentTime, 11.5);
+});
+
+test('warms the matching ending only after the main film is ready, then plays the prepared download', async () => {
+  const { $, video, metadata, decision, requests } = setup({ portrait: true, network: true });
+  metadata();
+  assert.equal(requests.length, 0);
+  video.emit('canplaythrough');
+  video.emit('canplaythrough');
+  assert.equal(requests.length, 1);
+  assert.equal(requests[0].source, 'assets/portrait-wrong.mp4');
+  assert.equal(requests[0].options.priority, 'low');
+  requests[0].resolve({ ok: true, blob: async () => ({ size: 100, name: 'wrong' }) });
+  await new Promise(setImmediate);
+  assert.equal(video.paused, true, 'background preparation must not autoplay');
+  decision();
+  $('choose-wrong').click();
+  assert.equal(video.src, 'blob:prepared-wrong');
+  metadata();
+  assert.equal(video.currentTime, 30);
+  assert.equal(video.paused, false);
+});
+
+test('failed or incomplete background downloads never delay the selected ending', async () => {
+  for (const failed of [false, true]) {
+    const { $, video, metadata, decision, requests } = setup({ network: true });
+    video.emit('canplaythrough');
+    if (failed) { requests[0].reject(new Error('offline')); await new Promise(setImmediate); }
+    decision();
+    $('choose-wrong').click();
+    assert.equal(video.src, 'ScamProtection_Wrong.m4v');
+    if (!failed) assert.equal(requests[0].options.signal.aborted, true);
+    metadata();
+    assert.equal(video.currentTime, 30);
+    assert.equal(video.paused, false);
+    assert.equal($('error-panel').hidden, true);
+  }
+});
+
+test('rotation cancels the obsolete background request and prepares the new format', () => {
+  const { video, rotate, metadata, requests } = setup({ portrait: true, network: true });
+  video.emit('canplaythrough');
+  rotate(false);
+  assert.equal(requests[0].options.signal.aborted, true);
+  metadata();
+  video.emit('canplaythrough');
+  assert.equal(requests[1].source, 'ScamProtection_Wrong.m4v');
+  rotate(true);
+  metadata();
+  video.emit('canplaythrough');
+  assert.equal(requests[2].source, 'assets/portrait-wrong.mp4');
 });

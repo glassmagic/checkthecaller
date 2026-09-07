@@ -2,11 +2,18 @@
 <html lang="en-GB">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#143f46">
   <meta name="description" content="Practise spotting a phone scam. Watch a short film, choose what to do, and explore both endings at your own pace.">
-  <title>Fraud Protect — What would you do?</title>
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <meta name="application-name" content="Check the Caller">
+  <meta name="apple-mobile-web-app-title" content="Check the Caller">
+  <meta property="og:site_name" content="Check the Caller">
+  <meta property="og:title" content="Check the Caller — Would you trust this caller?">
+  <meta property="og:description" content="Spot the warning signs of a phone scam in a short interactive film.">
+  <title>Check the Caller — Would you trust this caller?</title>
+  <link rel="icon" href="assets/check-the-caller.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/check-the-caller.png" type="image/png" sizes="180x180">
+  <link rel="apple-touch-icon" href="assets/check-the-caller.png" sizes="180x180">
   <link rel="stylesheet" href="styles.css">
   <script src="app.js" defer></script>
 </head>
@@ -17,20 +24,19 @@
     <div class="intro-heading">
       <div class="intro-title">
         <p class="eyebrow">SPOT THE SCAM · AN INTERACTIVE FILM</p>
-        <h1>A phone call. <span>A choice.</span></h1>
+        <h1>Would you trust <span>this caller?</span></h1>
       </div>
-      <p class="lead">Watch, choose and learn how to spot a scam. Take your time.</p>
+      <p class="lead">Watch the call. Choose what to do.</p>
     </div>
 
-    <section class="player-card" aria-label="Interactive scam awareness film">
+    <section class="player-card" id="player-card" aria-label="Interactive scam awareness film">
     <ol class="steps" aria-label="Your progress">
-      <li id="step-watch" aria-current="step"><span>1</span> Watch the call</li>
-      <li id="step-choose"><span>2</span> Make a choice</li>
-      <li id="step-ending"><span>3</span> See what happens</li>
+      <li id="step-watch" aria-current="step"><span>1</span> Watch</li>
+      <li id="step-choose"><span>2</span> Choose</li>
+      <li id="step-ending"><span>3</span> Learn</li>
     </ol>
       <div class="video-stage" id="video-stage" tabindex="-1">
-        <video id="film" preload="metadata" playsinline poster="assets/poster.jpg" aria-label="A woman receives an unexpected phone call">
-          <source src="ScamProtection_Right.m4v" type="video/mp4">
+        <video id="film" preload="auto" playsinline poster="assets/poster.jpg" aria-label="A woman receives an unexpected phone call">
           Your browser cannot play this video. Please try a more recent browser.
         </video>
         <div class="start-screen" id="start-screen">
@@ -79,17 +85,16 @@
               <div class="result-summary">
                 <p class="eyebrow" id="outcome-label">THE UNSAFE CHOICE</p>
                 <h2 id="complete-title" tabindex="-1">Mrs Hartly lost all the money in her current account.</h2>
-                <p id="complete-description">She followed the scammer’s instructions, and her current account was emptied. A convincing scam can catch anyone out.</p>
+                <p id="complete-description">The caller was a scammer. She trusted him.</p>
               </div>
-              <p class="result-instruction">Select Next to explore the warning signs.</p>
+              <div class="result-shortcuts"><button class="primary-button" id="result-warnings" type="button">See the warning signs <span aria-hidden="true">→</span></button><button class="text-button" id="result-replays" type="button">Watch another version</button></div>
               <p class="sr-only" id="other-note"></p>
               <p class="sr-only" id="commentary-note">Commentary replays the unsafe version from the start, with pauses and on-screen explanations.</p>
             </section>
             <section class="result-page" id="result-page-1" aria-labelledby="warning-caller-title" hidden>
               <p class="eyebrow">Warning sign 1 of 3</p>
               <h2 id="warning-caller-title" tabindex="-1">A call you were not expecting</h2>
-              <p>A familiar name or phone number does not prove who is calling.</p>
-              <p>Scammers can make a call look as though it comes from your bank.</p>
+              <p>Scammers can copy your bank’s name and number. That does not prove who is calling.</p>
               <p class="result-takeaway"><strong>Check who is calling before sharing any information.</strong></p>
             </section>
             <section class="result-page" id="result-page-2" aria-labelledby="warning-pressure-title" hidden>
@@ -100,27 +105,23 @@
             </section>
             <section class="result-page" id="result-page-3" aria-labelledby="warning-account-title" hidden>
               <p class="eyebrow">Warning sign 3 of 3</p>
-              <h2 id="warning-account-title" tabindex="-1">Being told to use a “safe account”</h2>
-              <p>Your bank will never ask you to transfer money to a “safe account”.</p>
-              <p>That account could belong to the scammer.</p>
+              <h2 id="warning-account-title" tabindex="-1">Move money to “safety”</h2>
+              <p>Your bank will never ask you to move money to a “safe account”. It could belong to the scammer.</p>
               <p class="result-takeaway"><strong>Hang up and contact your bank yourself.</strong></p>
             </section>
             <section class="result-page" id="result-page-4" aria-labelledby="safe-next-step-title" hidden>
               <p class="eyebrow">Remember these three steps</p>
               <h2 id="safe-next-step-title" tabindex="-1">Stop, hang up and check</h2>
               <ol class="safety-steps">
-                <li><strong>End the call.</strong> You do not have to follow the caller’s instructions.</li>
+                <li><strong>Hang up.</strong> Stop following the caller’s instructions.</li>
                 <li><strong>Wait five minutes</strong> before calling back.</li>
-                <li><strong>Use the number on your bank card.</strong> Do not use a number the caller gives you.</li>
+                <li><strong>Call the number on your bank card.</strong> Use a number you trust.</li>
               </ol>
-              <p class="advice-source"><a href="https://www.takefive-stopfraud.org.uk/protect-yourself/impersonation-fraud/" target="_blank" rel="noopener noreferrer">More advice from Take Five (opens a new tab)</a></p>
+              <p class="advice-source"><a href="https://www.takefive-stopfraud.org.uk/protect-yourself/impersonation-fraud/" target="_blank" rel="noopener noreferrer">Take Five advice (new tab)</a></p>
             </section>
-          </div>
-          <nav class="result-navigation" aria-label="Read the ending explanation">
-            <button class="text-button" id="result-back" type="button">Back</button>
-            <p id="result-page-count" aria-live="polite">1 of 5</p>
-            <button class="primary-button" id="result-next" type="button">Next →</button>
-          </nav>
+            <section class="result-page" id="result-page-5" aria-labelledby="replay-title" hidden>
+              <p class="eyebrow">Explore the story</p>
+              <h2 id="replay-title" tabindex="-1">What would you like to watch?</h2>
           <div class="result-actions" id="result-actions">
             <div class="completion-actions">
               <button class="primary-button" id="other-ending" type="button">Watch the other ending <span aria-hidden="true">→</span></button>
@@ -128,6 +129,14 @@
               <button class="text-button" id="restart" type="button">Start the story again</button>
             </div>
           </div>
+            </section>
+          </div>
+          <nav class="result-navigation" aria-label="Read the ending explanation">
+            <button class="text-button" id="result-back" type="button">Back</button>
+            <p id="result-page-count" aria-live="polite">1 of 6</p>
+            <button class="primary-button" id="result-next" type="button">Next →</button>
+          </nav>
+
         </div>
       </section>
       </div>
