@@ -8,15 +8,15 @@
   const compactQuery = window.matchMedia?.('(max-width: 650px)');
   const isCompact = () => Boolean(compactQuery?.matches);
   const sourceFor = branch => (portraitQuery?.matches ? PORTRAIT_SOURCES : SOURCES)[branch];
-  const LABELS = { right: 'End the call and check independently', wrong: 'Follow the caller’s instructions' };
+  const LABELS = { right: 'Say no, hang up and check', wrong: 'Say yes and do as he asks' };
   // Seconds in the original unsafe video, aligned to the end of each request.
   const COMMENTARY_CUES = [
-    { time: 11.5, title: 'An unexpected call from “the bank”', text: 'He says he is from the fraud team, but that does not prove who he is. Knowing Mrs Hartly’s name does not make the call genuine.', mobileText: "He calls unexpectedly and claims to be from the bank. Knowing her name does not prove who he is." },
-    { time: 16.9, title: 'Fear makes the situation feel urgent', text: 'Saying someone has tried to take her money creates alarm. That pressure can make her follow instructions before checking whether the caller is genuine.', mobileText: "He says her money is at risk. Fear and pressure can stop her taking time to check the call." },
-    { time: 42.8, title: 'He asks for the full card number', text: 'He presents the long card number as a security check. Giving card details to an unexpected caller can help them make fraudulent payments. Hang up and check independently.', mobileText: "He asks for the long card number as a “security check”. An unexpected caller could use these details to commit fraud." },
+    { time: 11.5, title: 'An unexpected call from “the bank”', text: 'He says he is from the fraud team, but that does not prove who he is. Knowing Mrs Hartly’s name does not make the call genuine. Question with question: “Who’s calling? Which company? Why do you need that?”', mobileText: "He claims to be from the bank. Knowing her name proves nothing. Ask: who’s calling, which company, and why?" },
+    { time: 16.9, title: 'Fear makes it feel urgent', text: 'Saying someone has tried to take her money creates alarm. That pressure is designed to make her follow instructions before checking whether the caller is genuine. Never agree in haste.', mobileText: "He says her money is at risk. Fear and pressure are designed to rush her. Never agree in haste." },
+    { time: 42.8, title: 'He asks for the full card number', text: 'He presents the long card number as a security check. Your bank already has it. Giving card details to an unexpected caller can help them make fraudulent payments. Hang up and check independently.', mobileText: "He asks for the long card number as a “security check”. Your bank already has it. An unexpected caller could use it to commit fraud." },
     { time: 51.9, title: 'He asks her to read out a text code', text: 'A one-time code can approve a payment or give access to an account. Do not read it to an unexpected caller, even if they claim to be protecting you.', mobileText: "A text code can approve a payment or let someone into an account. Never read it to an unexpected caller." },
     { time: 58.35, title: 'He dismisses the “do not share” warning', text: 'Mrs Hartly notices the warning, but he says it does not apply to him. The warning still applies. Someone asking you to ignore it is a serious danger sign.', mobileText: "The text says “do not share”. He tells her to ignore that warning. The warning applies to him too." },
-    { time: 64.9, title: 'He claims he will move her money to safety', text: 'A “safe account” is a common scam story. Your bank will never ask you to transfer money to one. End the call and contact the bank yourself.', mobileText: "Your bank will never ask you to move money to a “safe account”. Hang up and call your bank yourself." },
+    { time: 64.9, title: 'He claims he will move her money to safety', text: 'A “safe account” is a common scam story. Your bank will never ask you to transfer money to one. Yes with no: “No. I’ll hang up and call the bank on the number on my card.”', mobileText: "Your bank will never ask you to move money to a “safe account”. Say no, hang up and call the number on your card." },
   ];
   const COMMENTARY_PAUSE_SECONDS = 12;
   const $ = (id) => document.getElementById(id);
@@ -276,8 +276,8 @@
       ? 'Mrs Hartly kept her money safe.'
       : 'Mrs Hartly lost all the money in her current account.';
     $('complete-description').textContent = safe
-      ? 'She hung up and called her bank herself.'
-      : 'The caller was a scammer. She trusted him.';
+      ? 'She said no, hung up and called the bank on the number on her card.'
+      : 'She said yes. The caller was a scammer, and he got everything he asked for.';
     $('other-ending').innerHTML = `${watched.size === 2 ? 'Watch the other ending again' : 'Watch the other ending'} <span aria-hidden="true">→</span>`;
     $('other-note').textContent = watched.size === 2
       ? 'You’ve now seen both endings. You can revisit either one or start again.'

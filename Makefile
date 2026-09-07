@@ -5,10 +5,10 @@ PORT ?= 8000
 .PHONY: help about run stop build test
 
 help: ## Show the available commands
-	@printf '%s\n' 'Check the Caller' '' '  make help    Show these commands' '  make about   Explain the site and requirements' '  make run     Build and open the site locally' '  make stop    Stop all preview servers for this project' '  make build   Package the site into dist/ for Netlify Drop' '  make test    Run player, access and packaging checks' '' 'Optional: make run PORT=8080' 'Requires uv and Make; uv manages Python. Tests also use Node.js.'
+	@printf '%s\n' 'Check the Caller' '' '  make help    Show these commands' '  make about   Explain the site and requirements' '  make run     Build and open the site locally' '  make stop    Stop all preview servers for this project' '  make build   Package the site into dist/ for Netlify Drop' '  make test    Run player, presentation, access and packaging checks' '' 'Optional: make run PORT=8080' 'Requires uv and Make; uv manages Python. Tests also use Node.js.'
 
 about: ## Explain the project
-	@printf '%s\n' 'Check the Caller is an interactive film with a shared-code entry page.' 'The story pauses at 30 seconds and waits for a choice.' 'Each choice plays its matching video from 30 seconds.' 'At the end, viewers can watch the alternative ending or restart.' '' 'The site uses plain HTML, CSS and JavaScript, with the supplied videos.' 'uv manages Python and the optional media tools through pyproject.toml and uv.lock.' 'The dist/ folder is a self-contained static site for Netlify Drop.'
+	@printf '%s\n' 'Check the Caller is a shared-code site with two parts: an HTML presentation' '(Staying Safer in a Digital World, 12 pages) and an interactive film.' 'The film pauses at 30 seconds and waits for a choice.' 'Each choice plays its matching video from 30 seconds.' 'At the end, viewers can watch the alternative ending or restart.' '' 'The site uses plain HTML, CSS and JavaScript, with the supplied videos.' 'uv manages Python and the optional media tools through pyproject.toml and uv.lock.' 'The dist/ folder is a self-contained static site for Netlify Drop.'
 
 run: ## Build, serve and open the local site
 	@$(UV) run --locked scripts/site.py run --port $(PORT)
