@@ -45,9 +45,15 @@ video { position: absolute; inset: 0; display: block; width: 100%; height: 100%;
 .start-screen { position: absolute; inset: 0; display: flex; align-items: flex-end; color: white; padding: 2.5rem; background: linear-gradient(0deg, #071d24ed, #071d2430 58%, #071d2408); }
 .start-content { display: grid; justify-items: start; gap: 1rem; }
 .film-label { font-family: Georgia, 'Times New Roman', serif; font-size: clamp(1.3rem, 3vw, 2.1rem); letter-spacing: -.02em; text-transform: none; }
-.start-button { display: flex; align-items: center; gap: .8rem; border: 1px solid var(--accent); border-radius: 10px; background: var(--accent); color: #153b34; padding: 1rem 1.4rem; min-height: 62px; font-size: 1.1rem; font-weight: 700; box-shadow: 0 4px 20px #0002; }
-.start-button > span { display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: #153b3412; font-size: .85rem; }
-.start-button:hover { background: #e6f5bf; box-shadow: 0 4px 24px #0004; }
+.start-button { display: inline-flex; align-items: center; gap: 16px; border: 1px solid #e6f4bf; border-radius: 16px; background: #dfefb7; color: #153b34; padding: 12px 24px 12px 12px; min-height: 76px; font-size: 1.15rem; font-weight: 700; box-shadow: 0 8px 24px #071d2440; }
+.play-symbol { display: grid; place-items: center; width: 50px; height: 50px; flex: 0 0 auto; border-radius: 50%; color: #f3f8e8; background: #173f46; }
+.play-symbol svg { display: block; width: 28px; height: 28px; fill: currentColor; }
+.start-label { text-align: left; line-height: 1.3; }
+.start-button:hover { background: #ecf7d3; border-color: #fff; box-shadow: 0 10px 28px #071d2455; }
+.start-button:active { background: #d0e8a0; box-shadow: 0 3px 10px #071d2430; }
+#play-pause { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+#play-pause::before { content: ''; width: 12px; height: 14px; flex-shrink: 0; background: currentColor; clip-path: polygon(0 0, 100% 50%, 0 100%); }
+#play-pause[data-playing="true"]::before { clip-path: polygon(0 0, 35% 0, 35% 100%, 0 100%, 0 0, 65% 0, 100% 0, 100% 100%, 65% 100%, 65% 0); }
 .start-content p { font-size: .88rem; color: #edf1ec; }
 .stage-notice { position: absolute; inset: 0; display: grid; place-items: center; background: #102f3577; text-align: center; padding: 1rem; color: white; }
 .stage-notice span { padding: .8rem 1.2rem; background: #143f46; border: 1px solid #ffffff30; border-radius: 8px; font-weight: 700; }
@@ -201,6 +207,7 @@ video { position: absolute; inset: 0; display: block; width: 100%; height: 100%;
 .result-navigation p { text-align: center; line-height: 1.3; }
 .result-navigation > p:only-child { grid-column: 1 / -1; }
 .result-navigation:has(#result-back[hidden]) { grid-template-columns: 1fr; }
+.result-navigation[data-page="0"] { visibility: hidden; pointer-events: none; }
 
 @media (max-width: 650px) {
   main { padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left)); }
@@ -236,7 +243,8 @@ video { position: absolute; inset: 0; display: block; width: 100%; height: 100%;
   .start-screen { padding: 20px; }
   .start-content { width: 100%; gap: 12px; }
   .film-label { font-size: 1.45rem; }
-  .start-button { justify-content: center; width: 100%; min-height: 56px; font-size: 1.1rem; }
+  .start-button { justify-content: center; width: 100%; min-height: 72px; padding: 10px 14px; gap: 12px; font-size: 1.05rem; }
+  .play-symbol { width: 44px; height: 44px; }
   .start-content p { font-size: .86rem; line-height: 1.4; }
   .choice-panel { padding: 20px 16px; overflow: visible; }
   .choice-panel h2 { font-family: Arial, Helvetica, sans-serif; font-size: 1.65rem; line-height: 1.15; font-weight: 700; }
@@ -251,6 +259,7 @@ video { position: absolute; inset: 0; display: block; width: 100%; height: 100%;
   .time { grid-column: 2; grid-row: 2; width: auto; text-align: center; font-size: .82rem; }
   .control-button, .sound { min-height: 44px; min-width: 64px; font-size: .9rem; padding: 6px 10px; }
   .sound { min-width: 104px; white-space: nowrap; }
+  #play-pause { min-width: 76px; padding-inline: 8px; }
   /* Controls keep their space when disabled so the page does not jump. */
   .player-card[data-phase="choice"] .controls, .player-card[data-phase="complete"] .controls { visibility: hidden; }
   .commentary-banner { min-height: 54px; padding: 6px 10px; }
@@ -270,4 +279,28 @@ video { position: absolute; inset: 0; display: block; width: 100%; height: 100%;
 
 @media (max-width: 650px) and (orientation: landscape) {
   .video-stage { aspect-ratio: 16 / 9; min-height: 24rem; }
+}
+
+/* A calm entry page with a visible code field and one clear action. */
+.access-page { min-height: 100svh; display: grid; place-items: center; padding: 32px 20px; }
+.access-card { width: 100%; max-width: 560px; padding: 36px; border: 1px solid var(--line); border-radius: 20px; background: #fff; box-shadow: 0 18px 60px #153c4310; }
+.access-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; font-weight: 700; font-size: 1.1rem; }
+.access-brand img { flex-shrink: 0; }
+.access-card h1 { font-size: 2rem; line-height: 1.15; margin-bottom: 14px; }
+.access-card > p { color: var(--muted); }
+#access-form { display: grid; gap: 10px; margin-top: 26px; }
+#access-form label { font-weight: 700; font-size: 1.1rem; }
+#access-code { width: 100%; min-height: 58px; padding: 12px 14px; border: 2px solid #6f898d; border-radius: 8px; color: var(--ink); background: #fff; font-size: 1.2rem; letter-spacing: .08em; }
+#access-code[aria-invalid="true"] { border-color: #9a3624; }
+#access-submit { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 58px; margin-top: 8px; font-size: 1rem; }
+.access-error { color: #9a3624; font-weight: 700; line-height: 1.45; }
+.access-card .access-support { margin-top: 24px; font-size: .95rem; line-height: 1.5; }
+@media (max-width: 650px) {
+  .access-page { padding: 12px; }
+  .access-card { padding: 22px; border-radius: 14px; }
+  .access-brand { margin-bottom: 18px; font-size: 1rem; }
+  .access-brand img { width: 42px; height: 42px; }
+  .access-card h1 { font-size: 1.7rem; }
+  #access-form { margin-top: 20px; gap: 8px; }
+  .access-card .access-support { margin-top: 20px; }
 }

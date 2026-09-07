@@ -94,6 +94,7 @@
     $('play-pause').disabled = !playable;
     $('progress').disabled = !playable;
     $('play-pause').textContent = video.paused ? 'Play' : 'Pause';
+    $('play-pause').setAttribute('data-playing', String(!video.paused));
     $('mute').textContent = video.muted ? 'Unmute' : 'Mute sound';
     $('mute').setAttribute('aria-pressed', String(video.muted));
     syncProgress();
@@ -119,7 +120,8 @@
     $('result-actions').hidden = resultPage !== 5;
     $('result-next').hidden = resultPage === 0;
     $('result-back').hidden = resultPage === 0;
-    $('result-page-count').textContent = resultPage === 0 ? 'Your result' : resultPage === 5 ? 'Watch again' : `${resultPage} of 4 · What to remember`;
+    $('result-navigation').setAttribute('data-page', String(resultPage));
+    $('result-page-count').textContent = resultPage === 0 ? '' : resultPage === 5 ? 'Watch again' : `${resultPage} of 4 · What to remember`;
   }
   function changeResultPage(direction) {
     if (phase !== 'complete') return;
