@@ -9,3 +9,7 @@ __pycache__/
 .env.*
 
 .venv/
+
+# The presenter's plain-text details stay local; only speaker.enc.json is published.
+private/*
+!private/speaker.example.json
