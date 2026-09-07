@@ -133,3 +133,5 @@ uv run --locked tests/preview_integration.py  # Localhost checks; stops all proj
 ```
 
 The player tests simulate media events; they do not replace testing actual playback in your target browsers. Before sharing widely, watch each path with sound on the devices your viewers use.
+
+Deployed automatically from `main` via the Netlify GitHub App.
