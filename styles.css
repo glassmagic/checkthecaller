@@ -334,18 +334,19 @@ h1 span { color: var(--yellow); }
 .taps li::before { content: counter(tap); display: grid; place-items: center; flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; color: white; font-weight: 700; font-size: .9rem; }
 .taps-green li::before { background: var(--green); }
 .taps-purple li::before { background: var(--purple); }
-/* Updated deck, page 12: orange and yellow panels with clear numbered examples. */
+/* Page 12: each topic has one accent, paired with a quiet background. */
 .scam-panels { align-items: stretch; gap: 1.5rem; }
-.scam-panel-ai { background: #f68c67; background: color-mix(in srgb, var(--orange) 65%, var(--cream)); }
-.scam-panel-qr { background: var(--yellow); }
+.scam-panel-ai { --scam-accent: var(--teal); background: var(--mint); }
+.scam-panel-qr { --scam-accent: var(--purple); background: var(--lavender); }
+.scam-panel { box-shadow: inset 0 4px 0 var(--scam-accent); }
 .scam-panel-heading { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
-.scam-panel-heading h3 { margin: 0; font-size: 1.2em; line-height: 1.2; }
-.scam-panel-heading h3 span { display: block; margin-top: .3rem; font-size: .85em; font-weight: 400; }
+.scam-panel-heading h3 { margin: 0; font-size: 1.2em; line-height: 1.2; color: var(--scam-accent); }
+.scam-panel-heading h3 span { display: block; margin-top: .3rem; font-size: .85em; font-weight: 400; color: var(--ink); }
 .scam-badge { display: grid; place-items: center; flex-shrink: 0; width: clamp(56px, 7.4cqw, 88px); aspect-ratio: 1; border-radius: 50%; font-weight: 700; font-size: 1.6em; color: white; }
-.scam-badge-ai, .slide-scams .taps-green li::before { background: #216f40; }
-.scam-badge-qr { background: var(--purple); }
+.scam-panel .scam-badge, .scam-panel .taps li::before { background: var(--scam-accent); }
 .scam-panel .taps { gap: 1.3rem; }
 .scam-panel .taps li { min-height: 2.2rem; }
+.slide-scams .other-scams { background: var(--grey); }
 .other-scams p { color: var(--ink); }
 .slide-cover, .slide-closing { position: relative; overflow: hidden; background: var(--teal-dark); color: white; }
 .slide-cover::before, .slide-closing::before { content: ''; position: absolute; top: -23%; right: -7.5%; width: 36%; aspect-ratio: 1; border-radius: 50%; background: var(--yellow); }
