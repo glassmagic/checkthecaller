@@ -1,6 +1,6 @@
 # Check the Caller
 
-This is the static fraud-awareness site in `glassmagic/checkthecaller`, aimed at older viewers. It uses plain HTML, CSS and JavaScript plus two supplied videos. After the shared code, a menu offers two parts: an HTML presentation (*Staying Safer in a Digital World*, 12 pages) and the *Check the Caller* interactive film. Keep the large text, clear controls, 30-second choice, both endings and optional commentary replay. Keep explanations over the film and avoid automatic page scrolling.
+This is the static fraud-awareness site in `glassmagic/checkthecaller`, aimed at older viewers. It uses plain HTML, CSS and JavaScript plus two supplied videos. After the shared code, a menu offers two parts: an HTML presentation (*Staying Safer in a Digital World*, 13 pages) and the *Check the Caller* interactive film. Keep the large text, clear controls, 30-second choice, both endings and optional commentary replay. Keep explanations over the film and avoid automatic page scrolling.
 
 ## GitHub workflow
 
@@ -77,7 +77,8 @@ Setup status checked on 7 September 2026 (recheck before treating it as current)
 
 ## Presentation, menu and shared design
 
-- The presentation in `index.html` (`#presentation`, pages `#slide-1` to `#slide-12`) is the HTML version of `Staying-Safer-in-a-Digital-World.pptx`. Keep its wording, page order and page count matching the deck unless the user supplies a new deck. The `.pptx` is reference material only (project root, if present) and is never copied into `dist`.
+- The presentation in `index.html` (`#presentation`, pages `#slide-1` to `#slide-13`) is the HTML version of `Staying-Safer-in-a-Digital-World-updated.pptx`. Keep its wording, page order and page count matching the deck unless the user supplies a new deck. The `.pptx` is reference material only (project root, if present) and is never copied into `dist`.
+- Approved adaptations to the updated deck: page 12 uses the neutral heading “Two types of scam to watch for”, tidied spelling and punctuation, and mint/teal and lavender/purple panels with matching badges and numbers. The other-scams strip is neutral grey. Page 13 uses lighter coloured text highlights and white advice links for contrast. Keep the menu, initial page counter and navigation tests at thirteen pages. The presenter introduction stays encrypted.
 - Compare rendered PowerPoint slides when changing the presentation design. Desktop uses a 16:9 minimum canvas that grows with content; phones reflow the cards and diagrams with 20px body text. Never shrink or clip a whole slide to make it fit. The presentation's Calibri-compatible Carlito fonts are self-hosted in `assets/fonts/`, with their OFL licence, and included in the packaging allowlist. Keep this typography scoped to the presentation.
 - `access.js` owns the menu and routing: the address hash is the single source of truth (`#film`, `#slide-N`, `#menu`), and each part's script (`app.js`, `presentation.js`) loads only when first chosen. Opening the presentation must never start a video download. `presentation.js` only navigates pages.
 - Every screen sits on one canvas: the teal ground and soft shapes are `body` and its pseudo-elements, with white cards on top. Controls placed directly on the canvas use the `.text-on-dark` / `.deck-nav` styles. The slide diagrams are CSS connectors and one inline SVG (see the page comments in `styles.css`); they are hidden below 650px, where cards stack.
