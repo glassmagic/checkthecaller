@@ -40,7 +40,7 @@ This is a lightweight entry screen, **not authentication**. The static HTML and 
 
 ## Presentation and menu
 
-The presentation is a native HTML version of `Staying-Safer-in-a-Digital-World.pptx` (12 pages, same words and colour scheme), in `index.html` under `#presentation`, with `presentation.js` for navigation. One page shows at a time with large Back/Next buttons; the arrow, Page Up/Down, Home and End keys also work. Icons are inline SVG symbols, not images or emoji.
+The presentation is a native HTML version of `Staying-Safer-in-a-Digital-World-updated.pptx` (13 pages, with approved wording and readability refinements), in `index.html` under `#presentation`, with `presentation.js` for navigation. Page 12 covers AI impersonation, QR-code phishing and other scams; page 13 closes with the three habits and advice links. One page shows at a time with large Back/Next buttons; the arrow, Page Up/Down, Home and End keys also work. Icons are inline SVG symbols, not images or emoji.
 
 The address hash records where the visitor is, so the browser's Back button works and links can point to a page: `#slide-4` opens page 4, `#film` opens the film, and `#menu` (or no hash) opens the menu, always after the access code. Page 8 and the closing page link to the film; the film's replay screen links back to the presentation.
 
