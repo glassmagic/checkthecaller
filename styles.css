@@ -376,11 +376,6 @@ h1 span { color: var(--yellow); }
 .slide .habit strong { font-size: 1.12em; }
 .habit strong { margin-top: .5rem; font-size: 1.12rem; }
 /* Preserve the deck's coloured emphasis with lighter backgrounds for legibility. */
-.habit-orange { --habit-tint: var(--peach); --habit-accent: #ffc195; }
-.habit-purple { --habit-tint: var(--lavender); --habit-accent: #d4c3e6; }
-.habit-green { --habit-tint: var(--leaf); --habit-accent: #b6e3c6; }
-.habit-highlight { padding: .05em .12em; background: var(--habit-tint); color: var(--ink); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
-.habit strong .habit-highlight { background: var(--habit-accent); }
 .advice-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin: 0; padding: 0; list-style: none; }
 .advice-list li { display: grid; gap: .2rem; }
 .advice-list a { font-weight: 700; word-break: break-word; color: white; }
