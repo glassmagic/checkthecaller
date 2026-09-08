@@ -21,6 +21,7 @@ ROOT = Path(__file__).resolve().parent.parent
 PUBLIC_FILES = (
     "index.html", "styles.css", "app.js", "access.js", "presentation.js", "speaker.enc.json", "_headers",
     "assets/check-the-caller.svg", "assets/check-the-caller.png", "assets/poster.jpg", "assets/poster-portrait.jpg",
+    "assets/fonts/Carlito-Regular.woff2", "assets/fonts/Carlito-Bold.woff2", "assets/fonts/OFL.txt",
     "assets/portrait-right.mp4", "assets/portrait-wrong.mp4",
     "ScamProtection_Right.m4v", "ScamProtection_Wrong.m4v",
 )
