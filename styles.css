@@ -343,9 +343,14 @@ h1 span { color: var(--yellow); }
 .scam-panel-heading h3 { margin: 0; font-size: 1.2em; line-height: 1.2; color: var(--scam-accent); }
 .scam-panel-heading h3 span { display: block; margin-top: .3rem; font-size: .85em; font-weight: 400; color: var(--ink); }
 .scam-badge { display: grid; place-items: center; flex-shrink: 0; width: clamp(56px, 7.4cqw, 88px); aspect-ratio: 1; border-radius: 50%; font-weight: 700; font-size: 1.6em; color: white; }
-.scam-panel .scam-badge, .scam-panel .taps li::before { background: var(--scam-accent); }
-.scam-panel .taps { gap: 1.3rem; }
-.scam-panel .taps li { min-height: 2.2rem; }
+.scam-panel .scam-badge { background: var(--scam-accent); }
+.scam-badge svg, .scam-example-icon svg { display: block; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.scam-badge svg { width: 64%; height: 64%; }
+.scam-badge .qr-symbol { fill: currentColor; stroke: none; }
+.scam-examples { display: grid; gap: 1rem; margin: 0; padding: 0; list-style: none; }
+.scam-examples li { display: grid; grid-template-columns: 44px minmax(0, 1fr); align-items: center; gap: .85rem; min-height: 3rem; }
+.scam-example-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: white; color: var(--scam-accent); }
+.scam-example-icon svg { width: 28px; height: 28px; }
 .slide-scams .other-scams { background: var(--grey); }
 .other-scams p { color: var(--ink); }
 .slide-cover, .slide-closing { position: relative; overflow: hidden; background: var(--teal-dark); color: white; }
@@ -734,7 +739,7 @@ video { position: absolute; inset: 0; display: block; width: 100%; height: 100%;
   .scam-panel-heading { gap: .7rem; margin-bottom: 1.2rem; }
   .scam-panel-heading h3 { font-size: 1.1em; }
   .scam-badge { width: 56px; font-size: 1.4em; }
-  .scam-panel .taps li { align-items: flex-start; }
+  .scam-examples li { align-items: start; gap: .7rem; }
   .strip { gap: .7rem; }
   .strip > p { min-width: 0; flex-basis: 100%; }
   .strip .text-button { width: 100%; }
