@@ -1,0 +1,7 @@
+{
+  "name": "Presenter name",
+  "greeting": "Hello, I’m the presenter",
+  "role": "Presenter’s role",
+  "bio": "One or two sentences about the presenter’s background.",
+  "note": "A closing line from the presenter."
+}
