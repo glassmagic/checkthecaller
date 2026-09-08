@@ -334,6 +334,25 @@ h1 span { color: var(--yellow); }
 .taps li::before { content: counter(tap); display: grid; place-items: center; flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; color: white; font-weight: 700; font-size: .9rem; }
 .taps-green li::before { background: var(--green); }
 .taps-purple li::before { background: var(--purple); }
+/* Page 12: each topic has one accent, paired with a quiet background. */
+.scam-panels { align-items: stretch; gap: 1.5rem; }
+.scam-panel-ai { --scam-accent: var(--teal); background: var(--mint); }
+.scam-panel-qr { --scam-accent: var(--purple); background: var(--lavender); }
+.scam-panel { box-shadow: inset 0 4px 0 var(--scam-accent); }
+.scam-panel-heading { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+.scam-panel-heading h3 { margin: 0; font-size: 1.2em; line-height: 1.2; color: var(--scam-accent); }
+.scam-panel-heading h3 span { display: block; margin-top: .3rem; font-size: .85em; font-weight: 400; color: var(--ink); }
+.scam-badge { display: grid; place-items: center; flex-shrink: 0; width: clamp(56px, 7.4cqw, 88px); aspect-ratio: 1; border-radius: 50%; font-weight: 700; font-size: 1.6em; color: white; }
+.scam-panel .scam-badge { background: var(--scam-accent); }
+.scam-badge svg, .scam-example-icon svg { display: block; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.scam-badge svg { width: 64%; height: 64%; }
+.scam-badge .qr-symbol { fill: currentColor; stroke: none; }
+.scam-examples { display: grid; gap: 1rem; margin: 0; padding: 0; list-style: none; }
+.scam-examples li { display: grid; grid-template-columns: 44px minmax(0, 1fr); align-items: center; gap: .85rem; min-height: 3rem; }
+.scam-example-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: white; color: var(--scam-accent); }
+.scam-example-icon svg { width: 28px; height: 28px; }
+.slide-scams .other-scams { background: var(--grey); }
+.other-scams p { color: var(--ink); }
 .slide-cover, .slide-closing { position: relative; overflow: hidden; background: var(--teal-dark); color: white; }
 .slide-cover::before, .slide-closing::before { content: ''; position: absolute; top: -23%; right: -7.5%; width: 36%; aspect-ratio: 1; border-radius: 50%; background: var(--yellow); }
 .slide-cover::after, .slide-closing::after { content: ''; position: absolute; bottom: -24%; right: -14%; width: 30%; aspect-ratio: 1; border-radius: 50%; background: var(--orange); }
@@ -356,9 +375,15 @@ h1 span { color: var(--yellow); }
 .slide .habit .icon { width: 6.8cqw; height: 6.8cqw; min-width: 48px; min-height: 48px; }
 .slide .habit strong { font-size: 1.12em; }
 .habit strong { margin-top: .5rem; font-size: 1.12rem; }
+/* Preserve the deck's coloured emphasis with lighter backgrounds for legibility. */
+.habit-orange { --habit-tint: var(--peach); --habit-accent: #ffc195; }
+.habit-purple { --habit-tint: var(--lavender); --habit-accent: #d4c3e6; }
+.habit-green { --habit-tint: var(--leaf); --habit-accent: #b6e3c6; }
+.habit-highlight { padding: .05em .12em; background: var(--habit-tint); color: var(--ink); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.habit strong .habit-highlight { background: var(--habit-accent); }
 .advice-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin: 0; padding: 0; list-style: none; }
 .advice-list li { display: grid; gap: .2rem; }
-.advice-list a { font-weight: 700; word-break: break-word; }
+.advice-list a { font-weight: 700; word-break: break-word; color: white; }
 .advice-list a:focus-visible { outline-color: var(--yellow); }
 .advice-list span { font-size: .9rem; color: #cfe6e3; }
 .slide .closing-line { margin-top: 1.6rem; padding-top: 1rem; font-size: 1.65em; font-style: italic; font-weight: 700; }
@@ -711,6 +736,10 @@ video { position: absolute; inset: 0; display: block; width: 100%; height: 100%;
   .detail-note, .phone-mock figcaption { font-size: .95em; }
   .slide .never-list li { display: grid; grid-template-columns: auto 1fr; gap: .7rem; }
   .slide .never-list strong { grid-column: 1 / -1; }
+  .scam-panel-heading { gap: .7rem; margin-bottom: 1.2rem; }
+  .scam-panel-heading h3 { font-size: 1.1em; }
+  .scam-badge { width: 56px; font-size: 1.4em; }
+  .scam-examples li { align-items: start; gap: .7rem; }
   .strip { gap: .7rem; }
   .strip > p { min-width: 0; flex-basis: 100%; }
   .strip .text-button { width: 100%; }
