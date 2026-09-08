@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#143f46">
-  <meta name="description" content="Practise spotting a phone scam. Watch a short film, choose what to do, and explore both endings at your own pace.">
+  <meta name="theme-color" content="#05726d">
+  <meta name="description" content="Staying Safer in a Digital World: a short presentation on three simple habits, and an interactive film where you choose what to say when the phone rings.">
   <meta name="application-name" content="Check the Caller">
   <meta name="apple-mobile-web-app-title" content="Check the Caller">
   <meta property="og:site_name" content="Check the Caller">
-  <meta property="og:title" content="Check the Caller — Would you trust this caller?">
-  <meta property="og:description" content="Spot the warning signs of a phone scam in a short interactive film.">
-  <title>Check the Caller — Would you trust this caller?</title>
+  <meta property="og:title" content="Check the Caller — Staying Safer in a Digital World">
+  <meta property="og:description" content="Three simple habits that keep you, and your money, safe. A short presentation and an interactive film.">
+  <title>Check the Caller — Staying Safer in a Digital World</title>
   <link rel="icon" href="assets/check-the-caller.svg" type="image/svg+xml">
   <link rel="icon" href="assets/check-the-caller.png" type="image/png" sizes="180x180">
   <link rel="apple-touch-icon" href="assets/check-the-caller.png" sizes="180x180">
@@ -18,30 +18,326 @@
   <script src="access.js" defer></script>
 </head>
 <body>
+  <svg hidden aria-hidden="true" focusable="false"><defs>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></symbol>
+    <symbol id="i-smartphone" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></symbol>
+    <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></symbol>
+    <symbol id="i-tv" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></symbol>
+    <symbol id="i-card" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></symbol>
+    <symbol id="i-car" viewBox="0 0 24 24"><path d="M3 13l2-5h14l2 5v6H3z"/><circle cx="7.5" cy="16.5" r="1.5"/><circle cx="16.5" cy="16.5" r="1.5"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+    <symbol id="i-drive" viewBox="0 0 24 24"><line x1="22" y1="12" x2="2" y2="12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" y1="16" x2="6.01" y2="16"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
+    <symbol id="i-unlock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></symbol>
+    <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></symbol>
+    <symbol id="i-mute" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+    <symbol id="i-message" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></symbol>
+    <symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+    <symbol id="i-sticker" viewBox="0 0 24 24"><path d="M4 3h13l4 4v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><polyline points="17 3 17 7 21 7"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></symbol>
+    <symbol id="i-layout" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></symbol>
+  </defs></svg>
+
   <section class="access-page" id="access-page" aria-labelledby="access-title">
     <div class="access-card">
       <div class="access-brand"><img src="assets/check-the-caller.svg" width="52" height="52" alt=""><span>Check the Caller</span></div>
-      <h1 id="access-title">Learn to spot a phone scam</h1>
-      <p>Practise spotting a phone scam in a short film.</p>
+      <h1 id="access-title">Staying Safer in a Digital World</h1>
+      <p>Three simple habits that keep you, and your money, safe. Enter your code to open the presentation and the interactive film.</p>
       <form id="access-form" novalidate>
         <label for="access-code">Access code</label>
         <input id="access-code" name="access-code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="access-error" required>
         <p class="access-error" id="access-error" role="alert" hidden></p>
-        <button class="primary-button" id="access-submit" type="submit">Open the film <span aria-hidden="true">→</span></button>
+        <button class="primary-button" id="access-submit" type="submit">Continue <span aria-hidden="true">→</span></button>
       </form>
       <p class="access-support">Need a code? Ask the person who shared this site with you.</p>
-      <noscript><p>This site needs JavaScript. Please enable it to enter your code and watch the film.</p></noscript>
+      <noscript><p>This site needs JavaScript. Please enable it to enter your code.</p></noscript>
     </div>
   </section>
-  <a class="skip-link" id="film-skip-link" href="#experience" hidden>Skip to the video</a>
+
+  <section class="hub" id="hub" hidden aria-labelledby="hub-title">
+    <div class="hub-card">
+      <div class="access-brand"><img src="assets/check-the-caller.svg" width="52" height="52" alt=""><span>Check the Caller</span></div>
+      <p class="eyebrow eyebrow-teal">WELCOME</p>
+      <h1 id="hub-title" tabindex="-1">Choose where to start</h1>
+      <p class="hub-lead">Both take about ten minutes. You can come back for the other one afterwards.</p>
+      <div class="hub-choices">
+        <button class="hub-choice" id="open-presentation" type="button">
+          <span class="hub-thumb hub-thumb-deck" aria-hidden="true"><span class="hub-mini-shield"><svg><use href="#i-shield"/></svg></span></span>
+          <span class="hub-text"><strong>Read the presentation</strong><span>Staying Safer in a Digital World: what the online world knows about you, and what to do when the phone rings or pings. Twelve short pages.</span></span>
+          <span class="hub-arrow" aria-hidden="true">→</span>
+        </button>
+        <button class="hub-choice" id="open-film" type="button">
+          <span class="hub-thumb hub-thumb-film" aria-hidden="true"><img src="assets/poster.jpg" alt="" width="120" height="72"><span class="hub-play"><svg><use href="#i-play"/></svg></span></span>
+          <span class="hub-text"><strong>Try the interactive film</strong><span>Check the Caller: watch a phone call unfold, choose what to say, and see both endings.</span></span>
+          <span class="hub-arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+      <p class="access-error" id="hub-error" role="alert" hidden></p>
+      <p class="hub-note"><strong>Enlightened, not frightened.</strong> Crime has always existed. Only the methods change.</p>
+    </div>
+  </section>
+
+  <section class="presentation" id="presentation" hidden aria-label="Presentation: Staying Safer in a Digital World">
+    <header class="section-bar deck-bar">
+      <button class="text-button back-button" id="deck-menu" type="button"><span aria-hidden="true">←</span> Menu</button>
+      <p class="deck-name">Staying Safer in a Digital World</p>
+    </header>
+    <div class="deck-stage" id="deck-stage" tabindex="-1">
+
+      <article class="slide slide-cover" id="slide-1" aria-labelledby="slide-1-title">
+        <div class="cover-content">
+          <span class="cover-badge"><svg><use href="#i-shield"/></svg></span>
+          <h2 id="slide-1-title" tabindex="-1">Staying Safer in a Digital World</h2>
+          <p class="cover-lead">Three simple habits that keep you, and your money, safe.</p>
+          <p class="cover-byline"><strong data-private="name"></strong><span>September 2026</span></p>
+        </div>
+        <span class="cover-dot" aria-hidden="true"></span>
+      </article>
+
+      <article class="slide" id="slide-2" aria-labelledby="slide-2-title" hidden>
+        <p class="eyebrow eyebrow-teal">WELCOME</p>
+        <!-- The presenter's details are filled in from speaker.enc.json after the code is entered. -->
+        <h2 id="slide-2-title" tabindex="-1" data-private="greeting"></h2>
+        <div class="slide-body two-col">
+          <div class="card card-grey profile">
+            <div class="row">
+              <span class="icon icon-teal-solid icon-lg"><svg><use href="#i-user"/></svg></span>
+              <div><strong data-private="name"></strong><span class="profile-role" data-private="role"></span></div>
+            </div>
+            <p data-private="bio"></p>
+            <p class="profile-note" data-private="note"></p>
+          </div>
+          <div class="stack">
+            <p class="slide-subhead">Today, in two parts</p>
+            <div class="card card-peach row"><span class="num num-orange">1</span><p><strong>What the online world knows about you</strong></p></div>
+            <div class="card card-mint row"><span class="num num-teal">2</span><p><strong>What to do when the phone rings, pings, or a code asks to be scanned</strong></p></div>
+            <div class="card card-cream row"><span class="icon icon-yellow"><svg><use href="#i-smile"/></svg></span><p><strong>Enlightened, not frightened.</strong> Crime has always existed. Only the methods change.</p></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="slide" id="slide-3" aria-labelledby="slide-3-title" hidden>
+        <p class="eyebrow">PART ONE · YOUR DIGITAL FOOTPRINT</p>
+        <h2 id="slide-3-title" tabindex="-1">Every device you use leaves a trace</h2>
+        <div class="slide-body two-col">
+          <div class="trace" role="group" aria-label="You at the centre, linked to your phone, computer, smart TV, bank card, car and doorbell">
+            <svg class="trace-lines" viewBox="0 0 360 360" aria-hidden="true" focusable="false"><g stroke="#c9d3d3" stroke-width="3"><line x1="180" y1="180" x2="180" y2="30"/><line x1="180" y1="180" x2="310" y2="105"/><line x1="180" y1="180" x2="310" y2="255"/><line x1="180" y1="180" x2="180" y2="330"/><line x1="180" y1="180" x2="50" y2="255"/><line x1="180" y1="180" x2="50" y2="105"/></g></svg>
+            <span class="trace-you"><svg><use href="#i-user"/></svg>You</span>
+            <ul class="trace-ring" role="list" aria-label="Devices that leave a trace">
+              <li class="t-phone"><span class="icon icon-peach"><svg><use href="#i-smartphone"/></svg></span><span>Phone</span></li>
+              <li class="t-computer"><span class="icon icon-peach"><svg><use href="#i-monitor"/></svg></span><span>Computer</span></li>
+              <li class="t-tv"><span class="icon icon-peach"><svg><use href="#i-tv"/></svg></span><span>Smart TV</span></li>
+              <li class="t-card"><span class="icon icon-peach"><svg><use href="#i-card"/></svg></span><span>Bank card</span></li>
+              <li class="t-car"><span class="icon icon-peach"><svg><use href="#i-car"/></svg></span><span>Car</span></li>
+              <li class="t-doorbell"><span class="icon icon-peach"><svg><use href="#i-home"/></svg></span><span>Doorbell</span></li>
+            </ul>
+          </div>
+          <div class="stack">
+            <div class="card card-grey row"><span class="icon icon-purple-solid"><svg><use href="#i-drive"/></svg></span><div><strong>Kept on the device</strong><p>Whether or not you are online.</p></div></div>
+            <div class="card card-grey row"><span class="icon icon-teal-solid"><svg><use href="#i-cloud"/></svg></span><div><strong>Kept on the internet</strong><p>“The cloud”: now, or the next time the device connects.</p></div></div>
+            <div class="card card-orange"><p><strong>All of it together is your digital footprint.</strong></p></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="slide" id="slide-4" aria-labelledby="slide-4-title" hidden>
+        <p class="eyebrow">PART ONE · YOUR DIGITAL FOOTPRINT</p>
+        <h2 id="slide-4-title" tabindex="-1">Some of it, anyone can see</h2>
+        <div class="slide-body two-col">
+          <div class="iceberg">
+            <div class="berg-row">
+              <div class="berg berg-public"><span class="berg-label">PUBLIC</span><span class="berg-note">Anyone can find this</span></div>
+              <ul><li>Facebook posts and photos</li><li>Reviews and comments</li><li>Public groups and clubs</li></ul>
+            </div>
+            <div class="berg-row sea">
+              <div class="berg berg-private"><span class="berg-label">PRIVATE</span><span class="berg-note">Needs a password, but still stored</span></div>
+              <ul><li>Emails and private messages</li><li>Online banking and shopping</li><li>Photos on your phone</li></ul>
+            </div>
+          </div>
+          <div class="stack">
+            <div class="card card-teal"><span class="icon icon-yellow-on-dark"><svg><use href="#i-eye-off"/></svg></span><strong>The simple rule</strong><p>The less you share openly, the less a stranger has to work with.</p></div>
+            <div class="card card-cream"><span class="icon icon-yellow"><svg><use href="#i-help"/></svg></span><strong>Ask yourself</strong><p>What could a stranger learn about me in ten minutes online?</p></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="slide" id="slide-5" aria-labelledby="slide-5-title" hidden>
+        <p class="eyebrow">PART ONE · YOUR DIGITAL FOOTPRINT</p>
+        <h2 id="slide-5-title" tabindex="-1">How your details reach a scammer</h2>
+        <div class="slide-body flow">
+          <ol class="route">
+            <li class="card card-lavender row"><span class="num num-purple">1</span><span class="icon icon-purple"><svg><use href="#i-file"/></svg></span><div><strong>You sign up to something</strong><p>Long terms and conditions let your details be shared and sold, quite legally.</p></div></li>
+            <li class="card card-peach row"><span class="num num-orange">2</span><span class="icon icon-orange"><svg><use href="#i-unlock"/></svg></span><div><strong>A company is hacked</strong><p>Stolen details are sold on to criminals.</p></div></li>
+            <li class="card card-cream row"><span class="num num-yellow">3</span><span class="icon icon-yellow"><svg><use href="#i-phone"/></svg></span><div><strong>You confirm details on a cold call</strong><p>Saying “yes, that’s me” turns a guess into a fact they can sell. This is the one you control.</p></div></li>
+          </ol>
+          <div class="route-join" aria-hidden="true"></div>
+          <div class="route-end"><span class="scammer"><svg><use href="#i-user"/></svg></span><strong>A scammer</strong></div>
+        </div>
+      </article>
+
+      <article class="slide" id="slide-6" aria-labelledby="slide-6-title" hidden>
+        <p class="eyebrow">PART ONE · YOUR DIGITAL FOOTPRINT</p>
+        <h2 id="slide-6-title" tabindex="-1">Your photos carry hidden details</h2>
+        <div class="slide-body photo-slide">
+          <figure class="phone-mock"><div class="phone-screen" aria-hidden="true"><span class="phone-sun"></span><span class="phone-hill"></span><span class="phone-cam"><svg><use href="#i-camera"/></svg></span></div><figcaption>Every photo you share</figcaption></figure>
+          <ul class="detail-list">
+            <li><span class="icon icon-peach icon-orange"><svg><use href="#i-clock"/></svg></span><div><strong>When it was taken</strong><p>Date and time, to the second</p></div></li>
+            <li><span class="icon icon-peach icon-orange"><svg><use href="#i-pin"/></svg></span><div><strong>Exactly where you were</strong><p>Often to within a few metres</p></div></li>
+            <li><span class="icon icon-peach icon-orange"><svg><use href="#i-compass"/></svg></span><div><strong>Which way you were facing</strong><p>And whether you were moving</p></div></li>
+            <li class="detail-note">…and dozens more, depending on your phone’s settings. Anyone you send the photo to may be able to read them.</li>
+          </ul>
+          <div class="card card-teal card-centre"><span class="icon icon-yellow-on-dark"><svg><use href="#i-bulb"/></svg></span><strong>One thing to do this week</strong><p>Turn off “location” in your camera settings. Not sure how? Ask a family member or your phone shop.</p></div>
+        </div>
+      </article>
+
+      <article class="slide" id="slide-7" aria-labelledby="slide-7-title" hidden>
+        <p class="eyebrow eyebrow-teal">PART TWO · WHEN THE PHONE RINGS</p>
+        <h2 id="slide-7-title" tabindex="-1">It depends who’s calling</h2>
+        <div class="slide-body stack-centre">
+          <p class="ring-pill"><span class="icon icon-yellow-on-dark"><svg><use href="#i-phone"/></svg></span>The phone rings</p>
+          <div class="split-tree" aria-hidden="true"></div>
+          <div class="two-col">
+            <div class="card card-leaf branch-card">
+              <div class="row"><span class="icon icon-green-solid"><svg><use href="#i-check"/></svg></span><div><strong>You know them</strong><p>The number is saved in your phone, or the voice is immediately familiar.</p></div></div>
+              <p class="card-inner card-inner-green">Chat as normal. If the talk turns to money or codes, slow right down.</p>
+            </div>
+            <div class="card card-peach branch-card">
+              <div class="row"><span class="icon icon-orange-solid"><svg><use href="#i-alert"/></svg></span><div><strong>You don’t</strong><p>An unknown voice, a silent line, or a withheld number.</p></div></div>
+              <p class="card-inner card-inner-orange">Use the three responses on the next page.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="slide" id="slide-8" aria-labelledby="slide-8-title" hidden>
+        <p class="eyebrow eyebrow-teal">PART TWO · WHEN THE PHONE RINGS</p>
+        <h2 id="slide-8-title" tabindex="-1">Three responses to learn by heart</h2>
+        <div class="slide-body">
+          <div class="three-col">
+            <div class="card card-mint response"><div class="response-head"><span class="num num-teal">1</span><span class="icon icon-white"><svg><use href="#i-mute"/></svg></span></div><strong>Silence with silence</strong><p>A silent call gets nothing from you. Say nothing and hang up.</p></div>
+            <div class="card card-lavender response"><div class="response-head"><span class="num num-purple">2</span><span class="icon icon-white"><svg><use href="#i-help"/></svg></span></div><strong>Question with question</strong><p>“Who’s calling?” “Which company?” “Why do you need that?”</p></div>
+            <div class="card card-peach response"><div class="response-head"><span class="num num-orange">3</span><span class="icon icon-white"><svg><use href="#i-stop"/></svg></span></div><strong>Yes with no</strong><p>Never agree in haste. “No. I’ll call you back on the official number.”</p></div>
+          </div>
+          <div class="card card-cream strip">
+            <span class="icon icon-yellow"><svg><use href="#i-bulb"/></svg></span>
+            <p><strong>Practise them until they come out automatically, like braking in a car.</strong></p>
+            <button class="text-button" id="slide-film-link" type="button">Practise with the film <span aria-hidden="true">→</span></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="slide" id="slide-9" aria-labelledby="slide-9-title" hidden>
+        <p class="eyebrow eyebrow-teal">PART TWO · WHEN THE PHONE PINGS</p>
+        <h2 id="slide-9-title" tabindex="-1">A message arrives: four steps before you tap</h2>
+        <div class="slide-body">
+          <ol class="four-col steps-flow">
+            <li class="card card-peach step"><span class="icon icon-orange-solid"><svg><use href="#i-stop"/></svg></span><strong>Stop</strong><p>Don’t tap the link or reply.</p></li>
+            <li class="card card-mint step"><span class="icon icon-teal-solid"><svg><use href="#i-search"/></svg></span><strong>Check</strong><p>Use the real app, or the number on your bank card.</p></li>
+            <li class="card card-lavender step"><span class="icon icon-purple-solid"><svg><use href="#i-flag"/></svg></span><strong>Report</strong><p>Forward the text to 7726. It’s free.</p></li>
+            <li class="card card-leaf step"><span class="icon icon-green-solid"><svg><use href="#i-users"/></svg></span><strong>Ask</strong><p>Get a second opinion from someone you trust.</p></li>
+          </ol>
+          <div class="card card-grey strip channels">
+            <strong>Same four steps for:</strong>
+            <ul class="channel-list">
+              <li><span class="icon icon-plain"><svg><use href="#i-message"/></svg></span>Texts</li>
+              <li><span class="icon icon-plain"><svg><use href="#i-phone"/></svg></span>WhatsApp</li>
+              <li><span class="icon icon-plain"><svg><use href="#i-users"/></svg></span>Facebook</li>
+              <li><span class="icon icon-plain"><svg><use href="#i-mail"/></svg></span>Email</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="slide" id="slide-10" aria-labelledby="slide-10-title" hidden>
+        <p class="eyebrow eyebrow-teal">PART TWO · WHEN A CODE ASKS TO BE SCANNED</p>
+        <h2 id="slide-10-title" tabindex="-1">QR codes: if in doubt, don’t scan</h2>
+        <div class="slide-body two-col qr-slide">
+          <div class="card card-dark qr-card"><span class="qr-glyph"><svg><use href="#i-qr"/></svg></span><strong>A QR code is a web link you can’t read.</strong><p>Anyone can make one and stick it anywhere.</p></div>
+          <ul class="stack never-list">
+            <li class="card card-peach row"><span class="icon icon-orange-solid"><svg><use href="#i-x"/></svg></span><span class="icon icon-plain"><svg><use href="#i-card"/></svg></span><strong>Never pay via a QR code</strong></li>
+            <li class="card card-peach row"><span class="icon icon-orange-solid"><svg><use href="#i-x"/></svg></span><span class="icon icon-plain"><svg><use href="#i-download"/></svg></span><strong>Never download an app via a QR code</strong></li>
+            <li class="card card-peach row"><span class="icon icon-orange-solid"><svg><use href="#i-x"/></svg></span><span class="icon icon-plain"><svg><use href="#i-sticker"/></svg></span><strong>Never scan a sticker on a wall, meter or menu</strong></li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="slide" id="slide-11" aria-labelledby="slide-11-title" hidden>
+        <p class="eyebrow eyebrow-teal">PART TWO · A PRACTICAL STEP</p>
+        <h2 id="slide-11-title" tabindex="-1">Blocking a number takes three taps</h2>
+        <div class="slide-body">
+          <div class="two-col">
+            <div class="card card-leaf howto">
+              <div class="row"><span class="icon icon-green-solid"><svg><use href="#i-smartphone"/></svg></span><strong>Android phones</strong></div>
+              <ol class="taps taps-green"><li>Open the message from the sender.</li><li>Tap the three dots, top right.</li><li>Tap Block.</li></ol>
+            </div>
+            <div class="card card-lavender howto">
+              <div class="row"><span class="icon icon-purple-solid"><svg><use href="#i-smartphone"/></svg></span><strong>iPhones</strong></div>
+              <ol class="taps taps-purple"><li>Open the message from the sender.</li><li>Tap the name or number at the top.</li><li>Tap Info, then Block this Caller.</li></ol>
+            </div>
+          </div>
+          <div class="card card-cream strip"><span class="icon icon-yellow"><svg><use href="#i-users"/></svg></span><p><strong>Not sure?</strong> Ask a family member or your phone shop. They will happily show you.</p></div>
+        </div>
+      </article>
+
+      <article class="slide slide-closing" id="slide-12" aria-labelledby="slide-12-title" hidden>
+        <h2 id="slide-12-title" tabindex="-1">Three habits to take home</h2>
+        <div class="three-col">
+          <div class="card card-white habit"><span class="icon icon-orange-solid"><svg><use href="#i-eye-off"/></svg></span><strong>Share less openly</strong><p>Less for a stranger to work with.</p></div>
+          <div class="card card-white habit"><span class="icon icon-purple-solid"><svg><use href="#i-phone"/></svg></span><strong>Silence, question, no</strong><p>The three responses for unknown callers.</p></div>
+          <div class="card card-white habit"><span class="icon icon-green-solid"><svg><use href="#i-list"/></svg></span><strong>Stop, check, report, ask</strong><p>Before you tap, scan, or reply.</p></div>
+        </div>
+        <p class="eyebrow eyebrow-yellow">FREE UK ADVICE</p>
+        <ul class="advice-list">
+          <li><a href="https://www.ofcom.org.uk/" target="_blank" rel="noopener noreferrer">ofcom.org.uk<span class="sr-only"> (opens in a new tab)</span></a><span>Scam calls and texts</span></li>
+          <li><a href="https://stopthinkfraud.campaign.gov.uk/" target="_blank" rel="noopener noreferrer">stopthinkfraud.campaign.gov.uk<span class="sr-only"> (opens in a new tab)</span></a><span>The government’s fraud campaign</span></li>
+          <li><a href="https://www.ncsc.gov.uk/" target="_blank" rel="noopener noreferrer">ncsc.gov.uk<span class="sr-only"> (opens in a new tab)</span></a><span>Staying secure online</span></li>
+        </ul>
+        <p class="closing-line">Enlightened, not frightened.</p>
+        <div class="closing-actions">
+          <button class="primary-button primary-yellow" id="deck-open-film" type="button">Try the interactive film <span aria-hidden="true">→</span></button>
+          <button class="text-button text-on-dark" id="deck-finish" type="button">Back to the menu</button>
+        </div>
+      </article>
+
+    </div>
+    <nav class="deck-nav" aria-label="Presentation pages">
+      <button class="text-button" id="deck-back" type="button"><span aria-hidden="true">←</span> Back</button>
+      <p id="deck-count" aria-live="polite">1 of 12</p>
+      <button class="primary-button" id="deck-next" type="button">Next <span aria-hidden="true">→</span></button>
+    </nav>
+  </section>
+
+  <a class="skip-link" id="film-skip-link" href="#video-stage" hidden>Skip to the video</a>
 
   <main id="experience" hidden>
+    <div class="section-bar"><button class="text-button back-button" id="film-menu" type="button"><span aria-hidden="true">←</span> Menu</button></div>
     <div class="intro-heading">
       <div class="intro-title">
-        <p class="eyebrow">SPOT THE SCAM · AN INTERACTIVE FILM</p>
+        <p class="eyebrow eyebrow-teal">WHEN THE PHONE RINGS · AN INTERACTIVE FILM</p>
         <h1>Would you trust <span>this caller?</span></h1>
       </div>
-      <p class="lead">Watch the call. Choose what to do.</p>
+      <p class="lead">You don’t know the voice. Watch the call, then choose your response.</p>
     </div>
 
     <section class="player-card" id="player-card" aria-label="Interactive scam awareness film">
@@ -56,7 +352,7 @@
         </video>
         <div class="start-screen" id="start-screen">
           <div class="start-content">
-            <span class="film-label">THE UNEXPECTED CALL</span>
+            <span class="film-label">The unexpected call</span>
             <button class="start-button" id="start" type="button"><span class="play-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M8 5.5v13l11-6.5Z"/></svg></span><span class="start-label">Watch the story</span></button>
             <p>Sound on · The story pauses for your choice</p>
           </div>
@@ -84,10 +380,10 @@
 
       <section class="story-panel choice-panel film-overlay" id="choice-panel" aria-labelledby="choice-title" hidden>
         <div class="overlay-content">
-        <div class="panel-heading"><p class="eyebrow">THE FILM IS PAUSED</p><h2 id="choice-title" tabindex="-1">What would you do?</h2><p>Choose an action to see how the story unfolds. You can watch both endings.</p></div>
+        <div class="panel-heading"><p class="eyebrow">THE FILM IS PAUSED</p><h2 id="choice-title" tabindex="-1">What would you say?</h2><p>Choose a response to see how the call unfolds. You can watch both endings.</p></div>
         <div class="choices">
-          <button class="choice" id="choose-wrong" type="button"><span class="choice-letter" aria-hidden="true">A</span><span><strong>Follow the caller’s instructions</strong><span>Stay on the call and do what they ask.</span></span><span class="choice-arrow" aria-hidden="true">→</span></button>
-          <button class="choice" id="choose-right" type="button"><span class="choice-letter" aria-hidden="true">B</span><span><strong>End the call and check independently</strong><span>Hang up and find out if the call was genuine.</span></span><span class="choice-arrow" aria-hidden="true">→</span></button>
+          <button class="choice" id="choose-wrong" type="button"><span class="choice-letter" aria-hidden="true">A</span><span><strong>Say yes and do as he asks</strong><span>Stay on the line and follow his instructions.</span></span><span class="choice-arrow" aria-hidden="true">→</span></button>
+          <button class="choice" id="choose-right" type="button"><span class="choice-letter" aria-hidden="true">B</span><span><strong>Say no, hang up and check</strong><span>End the call and contact the bank yourself.</span></span><span class="choice-arrow" aria-hidden="true">→</span></button>
         </div>
         <p class="reassurance">There’s no timer. Take as long as you need.</p>
         </div>
@@ -100,7 +396,7 @@
               <div class="result-summary">
                 <p class="eyebrow" id="outcome-label">THE UNSAFE CHOICE</p>
                 <h2 id="complete-title" tabindex="-1">Mrs Hartly lost all the money in her current account.</h2>
-                <p id="complete-description">The caller was a scammer. She trusted him.</p>
+                <p id="complete-description">She said yes. The caller was a scammer, and he got everything he asked for.</p>
               </div>
               <div class="result-shortcuts"><button class="primary-button" id="result-warnings" type="button">See the warning signs <span aria-hidden="true">→</span></button><button class="text-button" id="result-replays" type="button">Watch another version</button></div>
               <p class="sr-only" id="other-note"></p>
@@ -110,27 +406,28 @@
               <p class="eyebrow">Warning sign 1 of 3</p>
               <h2 id="warning-caller-title" tabindex="-1">A call you were not expecting</h2>
               <p>Scammers can copy your bank’s name and number. That does not prove who is calling.</p>
-              <p class="result-takeaway"><strong>Check who is calling before sharing any information.</strong></p>
+              <p class="result-takeaway"><strong>Question with question: “Who’s calling? Which company? Why do you need that?”</strong></p>
             </section>
             <section class="result-page" id="result-page-2" aria-labelledby="warning-pressure-title" hidden>
               <p class="eyebrow">Warning sign 2 of 3</p>
               <h2 id="warning-pressure-title" tabindex="-1">Being rushed or frightened</h2>
               <p>Pressure to act quickly makes it harder to stop and check whether the caller is telling the truth.</p>
-              <p class="result-takeaway"><strong>You can end the call. You do not have to act immediately.</strong></p>
+              <p class="result-takeaway"><strong>Yes with no: never agree in haste. You can end the call.</strong></p>
             </section>
             <section class="result-page" id="result-page-3" aria-labelledby="warning-account-title" hidden>
               <p class="eyebrow">Warning sign 3 of 3</p>
               <h2 id="warning-account-title" tabindex="-1">Move money to “safety”</h2>
               <p>Your bank will never ask you to move money to a “safe account”. It could belong to the scammer.</p>
-              <p class="result-takeaway"><strong>Hang up and contact your bank yourself.</strong></p>
+              <p class="result-takeaway"><strong>Hang up and contact your bank yourself, on the number on your card.</strong></p>
             </section>
             <section class="result-page" id="result-page-4" aria-labelledby="safe-next-step-title" hidden>
-              <p class="eyebrow">Remember these three steps</p>
-              <h2 id="safe-next-step-title" tabindex="-1">Stop, hang up and check</h2>
+              <p class="eyebrow">Remember these four steps</p>
+              <h2 id="safe-next-step-title" tabindex="-1">Stop, check, report, ask</h2>
               <ol class="safety-steps">
-                <li><strong>Hang up.</strong> Stop following the caller’s instructions.</li>
-                <li><strong>Wait five minutes</strong> before you call your bank.</li>
-                <li><strong>Call the number on your bank card.</strong> Use a number you trust.</li>
+                <li><strong>Stop.</strong> Hang up. Don’t follow the caller’s instructions.</li>
+                <li><strong>Check.</strong> Wait five minutes, then call the number on your bank card.</li>
+                <li><strong>Report.</strong> Tell your bank. Forward scam texts to 7726, free.</li>
+                <li><strong>Ask.</strong> Get a second opinion from someone you trust.</li>
               </ol>
               <p class="advice-source"><a href="https://www.takefive-stopfraud.org.uk/protect-yourself/impersonation-fraud/" target="_blank" rel="noopener noreferrer">Take Five advice (new tab)</a></p>
             </section>
@@ -142,7 +439,9 @@
               <button class="primary-button" id="other-ending" type="button">Watch the other ending <span aria-hidden="true">→</span></button>
               <button class="text-button commentary-replay" id="watch-commentary" type="button" aria-describedby="commentary-note">Watch again with commentary</button>
               <button class="text-button" id="restart" type="button">Start the story again</button>
+              <button class="text-button" id="film-open-presentation" type="button">Read the presentation</button>
             </div>
+            <p class="closing-note"><strong>Enlightened, not frightened.</strong> Practise the three responses until they come out automatically.</p>
           </div>
             </section>
           </div>
