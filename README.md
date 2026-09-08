@@ -40,7 +40,9 @@ This is a lightweight entry screen, **not authentication**. The static HTML and 
 
 ## Presentation and menu
 
-The presentation is a native HTML version of `Staying-Safer-in-a-Digital-World-updated.pptx` (13 pages, with approved wording and readability refinements), in `index.html` under `#presentation`, with `presentation.js` for navigation. Page 12 covers AI impersonation, QR-code phishing and other scams; page 13 closes with the three habits and advice links. One page shows at a time with large Back/Next buttons; the arrow, Page Up/Down, Home and End keys also work. Icons are inline SVG symbols, not images or emoji.
+The presentation is a native HTML version of `Staying-Safer-in-a-Digital-World-updated.pptx` (13 pages, with approved wording and readability refinements), in `index.html` under `#presentation`, with `presentation.js` for navigation. Page 12 covers AI impersonation, QR-code phishing and other scams; page 13 closes with the three habits and advice links. One page shows at a time with large Back/Next buttons; the arrow, Page Up/Down, Home and End keys also work. Icons are inline SVG symbols, not images or emoji: on page 12 each panel carries a subject icon and every example sits beside its own icon rather than a number, so the lists do not read as ordered steps.
+
+Each page is sized from a 16:9 container that grows with its content, so nothing is clipped or scaled down, and the type scales with it. The presentation is set in Carlito, the metric-compatible match for the deck's Calibri, self-hosted in `assets/fonts/` with its SIL Open Font Licence. That typography is scoped to the presentation; the menu and film keep the system sans-serif. On phones the cards and diagrams reflow at 20px body text instead of shrinking a whole page.
 
 The address hash records where the visitor is, so the browser's Back button works and links can point to a page: `#slide-4` opens page 4, `#film` opens the film, and `#menu` (or no hash) opens the menu, always after the access code. Page 8 and the closing page link to the film; the film's replay screen links back to the presentation.
 
@@ -48,7 +50,7 @@ The film's wording follows the presentation: the choice is *say yes* versus *say
 
 ## Netlify Drop
 
-Run `make build`, then drag the **dist folder** into Netlify Drop. It contains `index.html`, the stylesheet, the three scripts (`access.js`, `presentation.js`, `app.js`), the sealed `speaker.enc.json`, posters, bookmark icons, Netlify response headers, both original videos and their smaller portrait versions. The source `.pptx` and `private/speaker.json` are not published. There is no server to deploy and no build command needed on Netlify. The package is approximately 170 MB, including your supplied videos unchanged. The source videos remain in the project root.
+Run `make build`, then drag the **dist folder** into Netlify Drop. It contains `index.html`, the stylesheet, the three scripts (`access.js`, `presentation.js`, `app.js`), the sealed `speaker.enc.json`, the presentation fonts in `assets/fonts/` with their licence, posters, bookmark icons, Netlify response headers, both original videos and their smaller portrait versions. The source `.pptx` and `private/speaker.json` are not published. There is no server to deploy and no build command needed on Netlify. The package is approximately 170 MB, including your supplied videos unchanged. The source videos remain in the project root.
 
 Only an explicit list of public files is copied. Source scripts, tests, local memory and other hidden files are excluded. A missing required asset fails the build before replacing an existing dist folder. Rebuilding replaces generated dist contents, so edit the source files rather than dist.
 
@@ -137,7 +139,7 @@ Edit `index.html` for page and choice wording, `styles.css` for appearance and `
 
 ## Checks
 
-The regression checks use Node.js’s built-in test runner and Python’s standard library through uv:
+`make test` covers the film player, the access code and menu routing (including decryption and on-demand script loading), presentation navigation, and packaging. The regression checks use Node.js’s built-in test runner and Python’s standard library through uv:
 
 ```sh
 make test
