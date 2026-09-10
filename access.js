@@ -14,7 +14,9 @@
   const ready = new Set();
   let unlocked = false;
   let pending = null;
-  let payload = null;
+  // make local embeds only the sealed payload and deferred section initialisers.
+  const offline = window.checkTheCallerOffline;
+  let payload = offline?.payload ?? null;
   let checking = false;
 
   const normalise = code => code.trim().toUpperCase();
@@ -41,7 +43,9 @@
   function messageFor(error) {
     if (error.name === 'OperationError') return 'That code was not recognised. Please check it and try again.';
     if (error.message === 'unsupported') return 'This browser cannot open the site. Please use an up-to-date browser such as Safari, Chrome, Edge or Firefox.';
-    return 'Could not check your code. Check your connection and try again.';
+    return offline
+      ? 'Could not check your code. Please reopen the HTML file and try again.'
+      : 'Could not check your code. Check your connection and try again.';
   }
   function showError(message) {
     $('access-error').textContent = message;
@@ -92,6 +96,12 @@
   function load(section, onReady) {
     const src = SCRIPTS[section];
     if (!src || ready.has(src)) { onReady(); return; }
+    if (offline) {
+      offline.sections[section]();
+      ready.add(src);
+      onReady();
+      return;
+    }
     if (pending) return;
     $('hub-error').hidden = true;
     setHubBusy(true);

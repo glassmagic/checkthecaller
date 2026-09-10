@@ -1,5 +1,7 @@
 dist/
 .dist-build-*/
+local/
+.local-build-*/
 .preview-servers/
 .mcp_memory/
 __pycache__/

@@ -51,6 +51,8 @@
     backgroundLoads.delete(source);
   }
   async function prepareOtherEnding() {
+    // Browsers cannot fetch file: URLs; adjacent videos load through the player.
+    if (window.location?.protocol === 'file:') return;
     if (!window.fetch || !window.URL?.createObjectURL || !window.AbortController) return;
     const source = sourceFor(loaded === 'wrong' ? 'right' : 'wrong');
     if (preparedSources.has(source) || attemptedSources.has(source)) return;
