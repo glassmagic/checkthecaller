@@ -19,7 +19,7 @@ const IDS = ['access-form', 'access-code', 'access-error', 'access-submit', 'acc
 const HIDDEN = ['hub', 'presentation', 'experience', 'film-skip-link', 'access-error', 'hub-error'];
 const settle = async () => { for (let i = 0; i < 40; i++) await new Promise(resolve => setImmediate(resolve)); };
 
-function setup({ saved = null, blockedStorage = false, hash = '', fetchOk = true, crypto = webcrypto } = {}) {
+function setup({ saved = null, blockedStorage = false, hash = '', fetchOk = true, crypto = webcrypto, offline } = {}) {
   const elements = new Map();
   const scripts = [];
   const listeners = {};
@@ -58,7 +58,7 @@ function setup({ saved = null, blockedStorage = false, hash = '', fetchOk = true
   };
   vm.runInNewContext(script, {
     TextEncoder, TextDecoder,
-    window: { sessionStorage: storage, location, fetch, crypto, atob: text => Buffer.from(text, 'base64').toString('binary'), addEventListener(event, fn) { (listeners[event] ??= []).push(fn); } },
+    window: { checkTheCallerOffline: offline, sessionStorage: storage, location, fetch, crypto, atob: text => Buffer.from(text, 'base64').toString('binary'), addEventListener(event, fn) { (listeners[event] ??= []).push(fn); } },
     document: { getElementById: $, head: { append(node) { scripts.push(node); } },
       querySelectorAll(selector) { assert.equal(selector, '[data-private]'); return privates; },
       createElement(tag) { assert.equal(tag, 'script'); return { remove() { this.removed = true; } }; },
@@ -82,6 +82,31 @@ test('entry starts locked: no personal details, no player, no presentation, no v
   assert.equal(scripts.length, 0);
   assert.equal(fetches(), 0);
   assert.ok(privates.every(element => element.textContent === ''));
+});
+
+test('offline entry decrypts the embedded payload and starts each section only on demand', async () => {
+  const started = [];
+  const offline = { payload, sections: {
+    film: () => started.push('film'), presentation: () => started.push('presentation'),
+  } };
+  const page = setup({ offline, fetchOk: false, blockedStorage: true });
+  await page.enter('wrong');
+  assert.deepEqual(page.visible(), ['access-page']);
+  assert.ok(page.privates.every(element => element.textContent === ''));
+  await page.enter(CODE);
+  assert.deepEqual(page.visible(), ['hub']);
+  assert.equal(page.privates[0].textContent, FIELDS.name);
+  assert.deepEqual(started, []);
+  page.click('open-presentation');
+  assert.deepEqual(page.visible(), ['presentation']);
+  assert.deepEqual(started, ['presentation']);
+  page.click('deck-open-film');
+  assert.deepEqual(page.visible(), ['experience']);
+  page.click('film-menu');
+  page.click('open-film');
+  assert.deepEqual(started, ['presentation', 'film']);
+  assert.equal(page.fetches(), 0);
+  assert.equal(page.scripts.length, 0);
 });
 
 test('empty and incorrect codes give a readable error and keep everything else hidden', async () => {

@@ -2,7 +2,9 @@
 """Dependency-free packaging and a local preview with video byte-range support."""
 
 import argparse
+import base64
 import functools
+import html
 import http.server
 import hmac
 import json
@@ -25,6 +27,70 @@ PUBLIC_FILES = (
     "assets/portrait-right.mp4", "assets/portrait-wrong.mp4",
     "ScamProtection_Right.m4v", "ScamProtection_Wrong.m4v",
 )
+VIDEO_FILES = tuple(name for name in PUBLIC_FILES if name.endswith(('.mp4', '.m4v')))
+
+
+def local_html():
+    """Embed public resources; retain encrypted details and lazy player startup."""
+    document = (ROOT / 'index.html').read_text(encoding='utf-8')
+    styles = (ROOT / 'styles.css').read_text(encoding='utf-8')
+    scripts = {name: (ROOT / name).read_text(encoding='utf-8')
+               for name in ('access.js', 'app.js', 'presentation.js')}
+    mime_types = {'.svg': 'image/svg+xml', '.png': 'image/png',
+                  '.jpg': 'image/jpeg', '.woff2': 'font/woff2'}
+    for name in PUBLIC_FILES:
+        mime = mime_types.get(Path(name).suffix)
+        if mime:
+            data = base64.b64encode((ROOT / name).read_bytes()).decode('ascii')
+            uri = f'data:{mime};base64,{data}'
+            document = document.replace(name, uri)
+            styles = styles.replace(name, uri)
+            scripts = {key: value.replace(name, uri) for key, value in scripts.items()}
+    for name in VIDEO_FILES:
+        scripts = {key: value.replace(name, Path(name).name) for key, value in scripts.items()}
+    sealed = json.loads((ROOT / 'speaker.enc.json').read_text(encoding='utf-8'))
+    bootstrap = ('window.checkTheCallerOffline = {payload: ' + json.dumps(sealed) +
+                 ', sections: {film: function () {\n' + scripts['app.js'] +
+                 '\n}, presentation: function () {\n' + scripts['presentation.js'] + '\n}}};\n' +
+                 scripts['access.js'])
+    # Inline raw-text elements must not contain an HTML closing tag, even in a string.
+    bootstrap = re.sub(r'</script', r'<\\/script', bootstrap, flags=re.IGNORECASE)
+    styles = re.sub(r'</style', r'<\\/style', styles, flags=re.IGNORECASE)
+    document = document.replace('<link rel="stylesheet" href="styles.css">', f'<style>\n{styles}\n</style>')
+    document = document.replace('<script src="access.js" defer></script>', '')
+    licence = html.escape((ROOT / 'assets/fonts/OFL.txt').read_text(encoding='utf-8'))
+    document = document.replace('</body>', f'<template id="font-licence">{licence}</template>\n<script>\n{bootstrap}\n</script>\n</body>')
+    document = document.replace('Check your connection, then try again.',
+                                'Keep all four video files beside this HTML file, then try again.')
+    document = document.replace('Check your connection and select Try again.',
+                                'Keep all four video files beside this HTML file and select Try again.')
+    return document
+
+
+def build_local():
+    """Produce a portable folder that opens via file: without a web server."""
+    for name in PUBLIC_FILES:
+        source = ROOT / name
+        if not source.is_file() or source.stat().st_size == 0:
+            raise SystemExit(f'Missing or empty required file: {name}. Existing local/ was not changed.')
+    output = ROOT / 'local'
+    if output.is_symlink() or (output.exists() and not output.is_dir()):
+        raise SystemExit('local must be a normal directory, not a file or symbolic link.')
+    document = local_html()
+    stage = Path(tempfile.mkdtemp(prefix='.local-build-', dir=ROOT))
+    try:
+        (stage / 'index.html').write_text(document, encoding='utf-8')
+        for name in VIDEO_FILES:
+            shutil.copy2(ROOT / name, stage / Path(name).name)
+        if output.exists():
+            shutil.rmtree(output)
+        stage.rename(output)
+    finally:
+        if stage.exists():
+            shutil.rmtree(stage)
+    print(f'Built {output}. Open index.html in your browser; no server or internet needed.', flush=True)
+    print('Copy the whole local folder together. Enter the usual code. Advice website links need internet.', flush=True)
+    return output
 
 
 def build():
@@ -214,12 +280,14 @@ def stop():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("build", "run", "stop"))
+    parser.add_argument("command", choices=("build", "local", "run", "stop"))
     parser.add_argument("--port", type=int, default=8000)
     parser.add_argument("--no-open", action="store_true", help="Serve without opening a browser")
     args = parser.parse_args()
     if args.command == "build":
         build()
+    elif args.command == "local":
+        build_local()
     elif args.command == "stop":
         stop()
     else:

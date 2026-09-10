@@ -13,12 +13,21 @@ make run                  # Build, serve and open the site in your browser
 make run PORT=8080        # Use another port
 make stop                 # Stop all preview servers for this project
 make build                # Produce a self-contained dist/ folder
+make local                # Produce local/index.html with four adjacent video files
 make test                 # Run player, access and packaging checks
 ```
 
 Press Ctrl+C to stop the local server. It listens on localhost only and supports byte-range requests so videos can seek to the selected ending without downloading the whole file first. Without Make, use `uv run --locked scripts/site.py run` or `uv run --locked scripts/site.py build`.
 
 `make stop` stops every preview started from this project, including previews running on different ports or in other terminals. Each preview registers a private shutdown token in `.preview-servers/`; the stop command contacts only those registered localhost servers. It does not kill processes by name or affect unrelated sites. Stale records are cleaned up when a server has already stopped. These local records are never included in dist. Without Make, use `uv run --locked scripts/site.py stop`.
+
+## Offline copy
+
+Run `make local` (or `uv run --locked scripts/site.py local`). It creates `local/index.html` plus four video files beside it: the two original films and both portrait versions. Copy the whole `local/` folder to your computer or USB drive, then double-click `index.html` to open it in a current desktop browser. No web server, installation or internet connection is needed to view the copy. Use the usual access code.
+
+The HTML includes the styles, scripts, images, Carlito fonts and their licence, and the encrypted presenter details. The code and plain-text presenter file are never packaged. Opening the presentation does not start the film; the 13 pages, 30-second choice, both endings, commentary and portrait switching work as on the website. Videos load directly from the adjacent files, without fetch-based background downloads. The advice links to external websites still need internet access.
+
+Keep all five files together with their generated names. Re-running `make local` replaces the generated folder, so edit the source files rather than this copy. The folder is ignored by Git and excluded from the Netlify build. After changing the code or site, rebuild and redistribute the offline copy; existing copies do not update automatically.
 
 ## Python dependency management
 
@@ -66,7 +75,7 @@ Netlify is connected directly to GitHub, so no GitHub Actions deployment workflo
 
 PR previews use `https://deploy-preview-<PR number>--checkthecaller.netlify.app`. Netlify is configured to add their status and URL to the GitHub PR. The custom domain `checkthecaller.co.uk` is also configured in Netlify.
 
-Repository events are delivered through GitHub's Netlify webhook (`push`, `pull_request`, and branch `delete`), using the endpoint configured by Netlify. This is the webhook mechanism supported by Netlify CLI, with no Actions workflow needed. Native GitHub App notifications report build status, checks and preview links, matching Playgraze. The Netlify GitHub App must have access to `checkthecaller` for this integration to work.
+Repository events are delivered through the Netlify GitHub App, which must have access to `checkthecaller`. There is no repository-level Netlify webhook; the old legacy webhook prevented builds and was removed when the repository was re-linked. Native GitHub App notifications report build status, checks and preview links. No Actions deployment workflow is needed.
 
 | Setting | Value |
 | --- | --- |

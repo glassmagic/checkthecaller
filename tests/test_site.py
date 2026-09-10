@@ -1,6 +1,8 @@
 import contextlib
 import importlib.util
 import io
+import json
+from html.parser import HTMLParser
 from pathlib import Path
 import tempfile
 import unittest
@@ -50,6 +52,67 @@ class SiteTests(unittest.TestCase):
         with self.assertRaises(SystemExit):
             self.build()
         self.assertTrue((self.root / "assets/poster.jpg").exists())
+
+    def local(self):
+        with contextlib.redirect_stdout(io.StringIO()):
+            return site.build_local()
+
+    def local_sources(self):
+        for name in ('index.html', 'styles.css', 'access.js', 'app.js', 'presentation.js'):
+            (self.root / name).write_bytes((self.original_root / name).read_bytes())
+        (self.root / 'speaker.enc.json').write_text(json.dumps({'data': 'sealed-fixture'}))
+
+    def test_local_contains_only_html_and_unchanged_adjacent_videos(self):
+        self.local_sources()
+        (self.root / 'private').mkdir()
+        (self.root / 'private/speaker.json').write_text('NEVER INCLUDE THIS')
+        output = self.local()
+        self.assertEqual({p.name for p in output.iterdir()},
+                         {'index.html', *(Path(name).name for name in site.VIDEO_FILES)})
+        for name in site.VIDEO_FILES:
+            self.assertEqual((output / Path(name).name).read_bytes(), (self.root / name).read_bytes())
+        document = (output / 'index.html').read_text()
+        self.assertNotIn('NEVER INCLUDE THIS', document)
+        self.assertIn('sealed-fixture', document)
+        self.assertIn('data:font/woff2;base64,', document)
+        self.assertIn('id="font-licence"', document)
+        self.assertNotIn('assets/', document)
+        refs = []
+        class Resources(HTMLParser):
+            def handle_starttag(self, tag, attrs):
+                refs.extend(value for key, value in attrs if key in ('src', 'poster') or (tag == 'link' and key == 'href'))
+        Resources().feed(document)
+        self.assertTrue(refs)
+        self.assertTrue(all(ref.startswith('data:') for ref in refs), refs)
+        (output / 'stale.txt').write_text('old')
+        self.local()
+        self.assertFalse((output / 'stale.txt').exists())
+
+    def test_local_failure_preserves_previous_package(self):
+        self.local_sources()
+        output = self.local()
+        previous = (output / 'index.html').read_bytes()
+        (self.root / 'speaker.enc.json').write_text('invalid JSON')
+        with self.assertRaises(ValueError):
+            self.local()
+        self.assertEqual((output / 'index.html').read_bytes(), previous)
+        (self.root / 'assets/portrait-right.mp4').unlink()
+        with self.assertRaises(SystemExit):
+            self.local()
+        self.assertTrue((output / 'portrait-right.mp4').exists())
+
+    def test_local_refuses_symlink_output(self):
+        (self.root / 'local').symlink_to(self.root / 'assets', target_is_directory=True)
+        with self.assertRaises(SystemExit):
+            self.local()
+        self.assertTrue((self.root / 'assets/poster.jpg').exists())
+
+    def test_local_escapes_script_end_tags_in_embedded_data(self):
+        self.local_sources()
+        (self.root / 'speaker.enc.json').write_text(json.dumps({'data': '</script><script>alert(1)</script>'}))
+        document = (self.local() / 'index.html').read_text()
+        self.assertEqual(document.count('</script>'), 1)
+        self.assertIn(r'<\/script>', document)
 
     def response(self, request):
         handler = object.__new__(site.VideoHandler)
