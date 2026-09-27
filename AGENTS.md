@@ -48,12 +48,13 @@ Compare `context`, `review_id`, `commit_ref`, `state` and `error_message` with t
 
 Setup status checked on 7 September 2026 (recheck before treating it as current):
 
-- Automatic production deploys from `main` are confirmed working. After re-linking the repository in Netlify (which replaced the stale legacy webhook with the GitHub App event path), a push of `b63af74` at 21:01:29Z produced a Netlify build at 21:01:30Z with no manual trigger. Before the re-link, PR #1 (`d164a6e`) and PR #2 (`cdbc633`) merged without triggering any build and were deployed manually.
+- Automatic production deploys from `main` are confirmed working. After re-linking the repository in Netlify (which replaced the stale legacy webhook with the GitHub App event path), a push produced a Netlify build one second later with no manual trigger. Before the re-link, two merges produced no build at all and were deployed manually. The commit IDs that recorded this were rewritten away on 27 September 2026 and are deliberately not cited here.
 - Manual fallback if a merge does not build within a minute: `netlify api createSiteBuild --data '{"site_id":"bbc760d7-a824-4ee4-9035-3de1f74e4ac3"}'`. This builds on Netlify from the repository's `main`; nothing is uploaded from the local machine. Prefer it over `netlify deploy --build --prod`, which publishes the local working tree and uploads the ~170 MB `dist`.
 - Do not diagnose a missing build as an untrusted-contributor problem without evidence: the sole team member is an Owner linked to GitHub `glassmagic`, and held builds would show `deploy_pending_review_reason` on `listSiteBuilds`. The failure mode seen here created no build record at all.
-- Automatic PR Deploy Previews are confirmed working since the re-link: PR #3 received a `deploy-preview` deploy (`review_id` 3) within 30 seconds of its push, with no manual trigger. PR #2 predates the re-link and received none.
+- Automatic PR Deploy Previews are confirmed working since the re-link: a pull request received a `deploy-preview` deploy within 30 seconds of its push, with no manual trigger.
 - `https://checkthecaller.co.uk` passes HTTPS validation and returns HTTP 200. Do not disable certificate verification.
 - No deployment setup work is outstanding. Do not re-verify or re-link unless a merge or PR fails to build.
+- History was rewritten on 27 September 2026 to remove personal details and a superseded access code from every commit. Commit IDs from before that date no longer exist, so do not trust one quoted in an older note, issue or pull request. Netlify deploys predating the rewrite were deleted for the same reason, so there is nothing to roll back to.
 
 ## Work and checks
 
