@@ -59,7 +59,7 @@ Setup status checked on 7 September 2026 (recheck before treating it as current)
 
 - `make help`, `make about`, `make run`, `make stop`, `make build`, `make local` and `make test` are the supported commands. `make run PORT=8080` selects another port.
 - `make stop` shuts down project preview servers only. `tests/preview_integration.py` also stops all project previews; do not run it casually during unrelated changes.
-- `make local` creates ignored `local/index.html` with embedded public resources and encrypted presenter details, plus four adjacent videos. Preserve deferred section startup and direct `file:` playback; never package the code or plain-text presenter file.
+- `make local` creates ignored `local/index.html` with embedded public resources and the sealed access payload, plus four adjacent videos. Preserve deferred section startup and direct `file:` playback; never package the access code or the plain-text source in `private/`. The payload is embedded because decrypting it is what admits a viewer, not because it carries anything to display.
 - Run `make test` for player/access/packaging changes. It uses Node's built-in test runner and `uv run --locked python -m unittest discover -s tests -p 'test_*.py'`.
 - Run `make build` and `git diff --check` before delivery. Describe the checks actually performed; simulated media tests do not establish real-browser playback.
 - Check the Netlify deploy record for real build errors, and verify the matching commit when reporting a deployment as ready. Do not treat a local build or successful Git push as proof of deployment.
