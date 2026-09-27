@@ -39,7 +39,9 @@ Netlify's [Python dependency installation](https://docs.netlify.com/build/config
 
 Visitors first see the landing page and enter the shared access code. Matching ignores case and spaces at either end. Successful entry is remembered for this browser tab's session; a new session asks again. If storage is unavailable, entry still works, but refreshing asks again.
 
-The code is stored nowhere in this repository or the published site. Entering it decrypts `speaker.enc.json`, which holds the presenter's personal details (name, greeting, role, biography and closing line) sealed with AES-GCM under a key derived from the code with PBKDF2-SHA256 (300,000 iterations). A wrong code simply fails to decrypt. Web scrapers and search engines see empty placeholders where those details appear; everything else on the site is generic advice and stays readable.
+The code is stored nowhere in this repository or the published site. Entering it decrypts `speaker.enc.json`, sealed with AES-GCM under a key derived from the code with PBKDF2-SHA256 (300,000 iterations); a wrong code simply fails to decrypt. That decryption is the check that admits a visitor, so the file stays published even though no page displays its contents.
+
+The presentation names nobody. Page 1 is bylined with the date alone and page 2 is the agenda, so there are no personal details in the markup for a scraper to read or for the sealed file to supply. Anything still inside `speaker.enc.json` is readable by everyone who has the shared code, so keep personal text out of `private/speaker.json` as well.
 
 To set or change the code, or the details: keep the plain text in `private/speaker.json` (ignored by Git; copy `private/speaker.example.json` to start), then run `make private`, type the code when asked (or pass `ACCESS_CODE=...`), rebuild and deploy. Anyone with the old code must be given the new one. Because the whole repository is public, never commit the plain-text file or the code, and remember that codes used before this scheme remain visible in Git history, so choose a fresh one.
 
