@@ -8,7 +8,7 @@ const root = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const script = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 
-function setup({ ready = true, frames = true, portrait = false, compact = portrait, network = false } = {}) {
+function setup({ ready = true, frames = true, portrait = false, compact = portrait, network = false, protocol = 'https:' } = {}) {
   const elements = new Map();
   let focused;
   class Element {
@@ -69,6 +69,7 @@ function setup({ ready = true, frames = true, portrait = false, compact = portra
   vm.runInNewContext(script, {
     document: documentState,
     window: {
+      location: { protocol },
       matchMedia,
       ...(network ? {
         AbortController,
@@ -104,6 +105,15 @@ function setup({ ready = true, frames = true, portrait = false, compact = portra
   function end() { video.currentTime = video.duration; video.pause(); video.emit('ended'); }
   return { $, video, metadata, decision, end, advance, visibility, rotate, requests, focused: () => focused, tick: () => interval(), reject: name => { nextError = Object.assign(new Error(name), { name }); } };
 }
+
+test('local files play directly without fetch-based background downloads', () => {
+  const { video, requests, decision, $ } = setup({ network: true, protocol: 'file:' });
+  video.emit('canplaythrough');
+  assert.equal(requests.length, 0);
+  decision();
+  $('choose-wrong').click();
+  assert.equal(video.src, 'ScamProtection_Wrong.m4v');
+});
 
 test('starts without autoplay and pauses at 30 seconds until a choice is made', () => {
   const { $, video, focused } = setup();
