@@ -4,26 +4,23 @@ This is the static fraud-awareness site in `glassmagic/checkthecaller`, aimed at
 
 ## GitHub workflow
 
-- The empty repository was bootstrapped with the finished site on `main`. All subsequent work uses a feature branch and a pull request.
-- The user reviews and merges PRs on GitHub. Do not merge or push changes directly to `main` unless explicitly asked.
-- Open PRs ready for review, not draft. Follow-up requests for an open PR can use additional commits on the same branch; keep its description current.
-- After the user says a PR is merged, switch to `main`, pull with `--ff-only`, fetch with `--prune`, and remove the merged local branch if safe.
+- Since October 2026 the workflow is direct commits to `main`: make the change, run the checks, commit and push to `main`. Do not open feature branches or pull requests going forward.
+- The empty repository was bootstrapped with the finished site on `main`.
 - Keep the repository public as configured. Do not change its visibility without an explicit request.
+- If a pull request from the earlier workflow is still open, ask the user how to finish it rather than merging or closing it unasked.
 
 ### Routine change process
 
-This follows the branch, review and deployment process in Playgraze's `AGENTS.md`, adapted to this site's build and player.
+Adapted from Playgraze's `AGENTS.md` process to this site's build and player checks.
 
-1. Read this file, check `git status`, the current branch and the current PR state before editing. Preserve unrelated user changes.
-2. Use one feature branch per PR. Add follow-up requests to the same open PR as separate commits; if it has merged, start a new branch from updated `main`.
-3. Make the requested change and run the relevant checks below. Keep small copy or documentation changes lean: inspect all affected occurrences and the diff, without unrelated refactors or new test infrastructure.
-4. Commit and push, then open or update a ready-for-review PR. Describe what changed and the checks actually performed. Verify `isDraft` is false with `gh pr view <number> --json isDraft` and give the user the PR link.
-5. The user merges and normally deletes the remote branch. Once they report the merge, confirm it on GitHub, switch to `main`, pull with `--ff-only`, fetch with `--prune`, and safely delete the merged local branch. Do not discard uncommitted work or unmerged commits during cleanup.
-6. Verify the production deploy is ready for the merged `main` commit and that the affected public files are served. Use commit IDs to track deployment; this site does not use Playgraze's game-specific PR/version-number convention.
+1. Read this file and check `git status` and the current branch before editing; work on `main`. Preserve unrelated user changes.
+2. Make the requested change and run the relevant checks below. Keep small copy or documentation changes lean: inspect all affected occurrences and the diff, without unrelated refactors or new test infrastructure.
+3. Commit and push directly to `main`. Describe what changed and the checks actually performed in the report to the user.
+4. Verify the production deploy is ready for the pushed `main` commit and that the affected public files are served. Use commit IDs to track deployment; this site does not use Playgraze's game-specific PR/version-number convention.
 
 ## Netlify deployment
 
-- This project uses Netlify's native GitHub integration, like Playgraze. Merges into `main` trigger production builds; pull requests receive Deploy Previews. GitHub Actions is not needed to deploy.
+- This project uses Netlify's native GitHub integration, like Playgraze. Pushes to `main` trigger production builds; a pull request (now rare) receives a Deploy Preview. GitHub Actions is not needed to deploy.
 - Netlify project: `checkthecaller`, team `adampowell-is`, site ID `bbc760d7-a824-4ee4-9035-3de1f74e4ac3`. Netlify URL: `https://checkthecaller.netlify.app`; configured custom domain: `https://checkthecaller.co.uk`. PR previews: `https://deploy-preview-<PR number>--checkthecaller.netlify.app`.
 - Build settings live in Netlify: production branch `main`, build command `make build`, publish directory `dist`, no base directory.
 - Keep that single source of build configuration; do not add a redundant `netlify.toml` or GitHub Actions deployment workflow.
@@ -37,23 +34,22 @@ This follows the branch, review and deployment process in Playgraze's `AGENTS.md
 
 ### Deployment verification and troubleshooting
 
-Use the authenticated Netlify CLI from this project. Inspect actual deploy records when GitHub reports a preview failure or a build does not appear:
+Use the authenticated Netlify CLI from this project. Inspect actual deploy records when a build does not appear (for a rare open PR, `gh pr view <number> --repo glassmagic/checkthecaller --json state,isDraft,statusCheckRollup` shows its preview checks):
 
 ```sh
 netlify api listSiteDeploys --data '{"site_id":"bbc760d7-a824-4ee4-9035-3de1f74e4ac3","per_page":5}'
-gh pr view <number> --repo glassmagic/checkthecaller --json state,isDraft,statusCheckRollup
 ```
 
-Compare `context`, `review_id`, `commit_ref`, `state` and `error_message` with the intended PR or production commit. A successful webhook response alone does not prove that Netlify created a build. Do not trigger repeated production builds just to test documentation changes. For routine low-risk changes, hand over the PR promptly; wait for a preview when deployment is the task or the change warrants it.
+Compare `context`, `review_id`, `commit_ref`, `state` and `error_message` with the intended production commit. A successful webhook response alone does not prove that Netlify created a build. Do not trigger repeated production builds just to test documentation changes. For routine low-risk changes, hand over the change promptly; wait for a production build when deployment is the task or the change warrants it.
 
 Setup status checked on 7 September 2026 (recheck before treating it as current):
 
 - Automatic production deploys from `main` are confirmed working. After re-linking the repository in Netlify (which replaced the stale legacy webhook with the GitHub App event path), a push produced a Netlify build one second later with no manual trigger. Before the re-link, two merges produced no build at all and were deployed manually. The commit IDs that recorded this were rewritten away on 27 September 2026 and are deliberately not cited here.
-- Manual fallback if a merge does not build within a minute: `netlify api createSiteBuild --data '{"site_id":"bbc760d7-a824-4ee4-9035-3de1f74e4ac3"}'`. This builds on Netlify from the repository's `main`; nothing is uploaded from the local machine. Prefer it over `netlify deploy --build --prod`, which publishes the local working tree and uploads the ~170 MB `dist`.
+- Manual fallback if a push does not build within a minute: `netlify api createSiteBuild --data '{"site_id":"bbc760d7-a824-4ee4-9035-3de1f74e4ac3"}'`. This builds on Netlify from the repository's `main`; nothing is uploaded from the local machine. Prefer it over `netlify deploy --build --prod`, which publishes the local working tree and uploads the ~170 MB `dist`.
 - Do not diagnose a missing build as an untrusted-contributor problem without evidence: the sole team member is an Owner linked to GitHub `glassmagic`, and held builds would show `deploy_pending_review_reason` on `listSiteBuilds`. The failure mode seen here created no build record at all.
 - Automatic PR Deploy Previews are confirmed working since the re-link: a pull request received a `deploy-preview` deploy within 30 seconds of its push, with no manual trigger.
 - `https://checkthecaller.co.uk` passes HTTPS validation and returns HTTP 200. Do not disable certificate verification.
-- No deployment setup work is outstanding. Do not re-verify or re-link unless a merge or PR fails to build.
+- No deployment setup work is outstanding. Do not re-verify or re-link unless a push fails to build.
 - History was rewritten on 27 September 2026 to remove personal details and a superseded access code from every commit. Commit IDs from before that date no longer exist, so do not trust one quoted in an older note, issue or pull request. Netlify deploys predating the rewrite were deleted for the same reason, so there is nothing to roll back to.
 
 ## Work and checks
