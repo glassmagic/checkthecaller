@@ -1,6 +1,6 @@
 # Check the Caller
 
-This is the static fraud-awareness site in `glassmagic/checkthecaller`, aimed at older viewers. It uses plain HTML, CSS and JavaScript plus two supplied videos. After the shared code, a menu offers two parts: an HTML presentation (*Staying Safer in a Digital World*, 13 pages) and the *Check the Caller* interactive film. Keep the large text, clear controls, 30-second choice, both endings and optional commentary replay. Keep explanations over the film and avoid automatic page scrolling.
+This is the static fraud-awareness site in `glassmagic/checkthecaller`, aimed at older viewers. It uses plain HTML, CSS and JavaScript plus two supplied videos. After the shared code, a menu offers two parts: an HTML presentation (*Staying Safer in a Changing Digital World*, 13 pages) and the *Check the Caller* interactive film. Keep the large text, clear controls, 30-second choice, both endings and optional commentary replay. Keep explanations over the film and avoid automatic page scrolling.
 
 ## GitHub workflow
 

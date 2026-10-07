@@ -1,6 +1,6 @@
 # Check the Caller
 
-A single-page, accessible site with two parts behind a shared code: an HTML presentation, *Staying Safer in a Digital World*, and the *Check the Caller* interactive film. Built with plain HTML, CSS and JavaScript. No npm packages, backend, accounts, analytics or external services are used.
+A single-page, accessible site with two parts behind a shared code: an HTML presentation, *Staying Safer in a Changing Digital World*, and the *Check the Caller* interactive film. Built with plain HTML, CSS and JavaScript. No npm packages, backend, accounts, analytics or external services are used.
 
 ## Commands
 
