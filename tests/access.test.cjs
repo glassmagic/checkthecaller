@@ -17,7 +17,14 @@ const IDS = ['access-form', 'access-code', 'access-error', 'access-submit', 'acc
   'open-film', 'open-presentation', 'presentation', 'deck-stage', 'deck-menu', 'deck-open-film', 'deck-finish', 'slide-film-link',
   'experience', 'film-menu', 'film-open-presentation', 'film-skip-link', 'start'];
 const HIDDEN = ['hub', 'presentation', 'experience', 'film-skip-link', 'access-error', 'hub-error'];
-const settle = async () => { for (let i = 0; i < 40; i++) await new Promise(resolve => setImmediate(resolve)); };
+// Unlocking awaits WebCrypto PBKDF2, which runs off the event loop, so allow real
+// time as well as a run of event-loop turns before the assertions look at the DOM.
+const settle = async (ms = 400) => {
+  const deadline = Date.now() + ms;
+  do {
+    for (let i = 0; i < 20; i++) await new Promise(resolve => setImmediate(resolve));
+  } while (Date.now() < deadline);
+};
 
 function setup({ saved = null, blockedStorage = false, hash = '', fetchOk = true, crypto = webcrypto, offline } = {}) {
   const elements = new Map();
