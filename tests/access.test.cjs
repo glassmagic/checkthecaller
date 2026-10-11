@@ -14,7 +14,7 @@ let payload;
 before(async () => { payload = await encrypt(FIELDS, CODE, 1000); });
 
 const IDS = ['access-form', 'access-code', 'access-error', 'access-submit', 'access-page', 'hub', 'hub-title', 'hub-error',
-  'open-film', 'open-presentation', 'presentation', 'deck-stage', 'deck-menu', 'deck-open-film', 'deck-finish', 'slide-film-link',
+  'open-film', 'open-presentation', 'presentation', 'deck-stage', 'deck-menu', 'deck-finish', 'slide-film-link',
   'experience', 'film-menu', 'film-open-presentation', 'film-skip-link', 'start',
   'open-qr', 'qr-experience', 'qr-menu', 'qr-skip-link', 'qr-start', 'qr-open-presentation'];
 const HIDDEN = ['hub', 'presentation', 'experience', 'film-skip-link', 'qr-experience', 'qr-skip-link', 'access-error', 'hub-error'];
@@ -116,10 +116,10 @@ test('offline entry decrypts the embedded payload and starts each section only o
   page.click('open-presentation');
   assert.deepEqual(page.visible(), ['presentation']);
   assert.deepEqual(started, ['presentation']);
-  page.click('deck-open-film');
-  assert.deepEqual(page.visible(), ['experience']);
-  page.click('film-menu');
+  page.click('deck-menu');
+  assert.deepEqual(page.visible(), ['hub']);
   page.click('open-film');
+  assert.deepEqual(page.visible(), ['experience']);
   assert.deepEqual(started, ['presentation', 'film']);
   page.click('film-menu');
   page.click('open-qr');
@@ -207,15 +207,13 @@ test('choosing the presentation loads its script rather than the film, and the t
   scripts[0].onload();
   assert.deepEqual(visible(), ['presentation']);
   assert.equal(focused(), 'deck-stage');
-  click('deck-open-film');
+  click('slide-film-link');
   assert.equal(scripts[1].src, 'app.js');
   scripts[1].onload();
   assert.deepEqual(visible(), ['experience']);
   click('film-open-presentation');
   assert.equal(scripts.length, 2);
   assert.deepEqual(visible(), ['presentation']);
-  click('slide-film-link');
-  assert.deepEqual(visible(), ['experience']);
   click('deck-menu');
   assert.deepEqual(visible(), ['hub']);
   click('deck-finish');

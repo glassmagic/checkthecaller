@@ -165,7 +165,7 @@
     $('access-code').removeAttribute('aria-invalid');
     $('access-error').hidden = true;
   });
-  for (const id of ['open-film', 'deck-open-film', 'slide-film-link']) $(id).addEventListener('click', () => go('#film'));
+  for (const id of ['open-film', 'slide-film-link']) $(id).addEventListener('click', () => go('#film'));
   $('open-qr').addEventListener('click', () => go('#qr'));
   // The presentation's QR code page; if pages are ever renumbered, update this with them.
   $('qr-open-presentation').addEventListener('click', () => go('#slide-11'));
