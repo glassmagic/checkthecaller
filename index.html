@@ -88,7 +88,7 @@
       <div class="access-brand"><img src="assets/check-the-caller.svg" width="52" height="52" alt=""><span>Check the Caller</span></div>
       <p class="eyebrow eyebrow-teal">WELCOME</p>
       <h1 id="hub-title" tabindex="-1">Choose where to start</h1>
-      <p class="hub-lead">Both take about ten minutes. You can come back for the other one afterwards.</p>
+      <p class="hub-lead">Each takes about ten minutes. You can come back for the others afterwards.</p>
       <div class="hub-choices">
         <button class="hub-choice" id="open-presentation" type="button">
           <span class="hub-thumb hub-thumb-deck" aria-hidden="true"><span class="hub-mini-shield"><svg><use href="#i-shield"/></svg></span></span>
@@ -97,7 +97,12 @@
         </button>
         <button class="hub-choice" id="open-film" type="button">
           <span class="hub-thumb hub-thumb-film" aria-hidden="true"><img src="assets/poster.jpg" alt="" width="120" height="72"><span class="hub-play"><svg><use href="#i-play"/></svg></span></span>
-          <span class="hub-text"><strong>Try the interactive film</strong><span>Check the Caller: watch a phone call unfold, choose what to say, and see both endings.</span></span>
+          <span class="hub-text"><strong>Try the phone scam film</strong><span>Check the Caller: watch a phone call unfold, choose what to say, and see both endings.</span></span>
+          <span class="hub-arrow" aria-hidden="true">→</span>
+        </button>
+        <button class="hub-choice" id="open-qr" type="button">
+          <span class="hub-thumb hub-thumb-film" aria-hidden="true"><img src="assets/qr-poster.jpg" alt="" width="120" height="72"><span class="hub-play"><svg><use href="#i-play"/></svg></span></span>
+          <span class="hub-text"><strong>Try the QR code scam film</strong><span>Watch a car park payment unfold, choose what the driver does, and see both endings.</span></span>
           <span class="hub-arrow" aria-hidden="true">→</span>
         </button>
       </div>
@@ -353,6 +358,7 @@
   </section>
 
   <a class="skip-link" id="film-skip-link" href="#video-stage" hidden>Skip to the video</a>
+  <a class="skip-link" id="qr-skip-link" href="#qr-stage" hidden>Skip to the video</a>
 
   <main id="experience" hidden>
     <div class="section-bar"><button class="text-button back-button" id="film-menu" type="button"><span aria-hidden="true">←</span> Menu</button></div>
@@ -493,6 +499,89 @@
       </div>
     </section>
     <p class="sr-only" role="status" id="status" aria-live="polite"></p>
+  </main>
+
+  <main id="qr-experience" hidden>
+    <div class="section-bar"><button class="text-button back-button" id="qr-menu" type="button"><span aria-hidden="true">←</span> Menu</button></div>
+    <div class="intro-heading">
+      <div class="intro-title">
+        <p class="eyebrow eyebrow-teal">WHEN A QR CODE IS PRESENT · AN INTERACTIVE FILM</p>
+        <h1>Would you scan <span>this code?</span></h1>
+      </div>
+      <p class="lead">A small sticker can send you somewhere else. Watch what happens, then choose what the driver does.</p>
+    </div>
+
+    <section class="player-card qr-player" id="qr-player" aria-label="Interactive QR code scam awareness film">
+      <ol class="steps" aria-label="Your progress">
+        <li id="qr-step-watch" aria-current="step"><span>1</span> Watch</li>
+        <li id="qr-step-choose"><span>2</span> Choose</li>
+        <li id="qr-step-ending"><span>3</span> Learn</li>
+      </ol>
+      <div class="qr-stage" id="qr-stage" tabindex="-1">
+        <div class="qr-video-box">
+          <video id="qr-film" preload="auto" playsinline poster="assets/qr-poster.jpg" aria-label="A driver scans a QR code on a car park payment sign">
+            Your browser cannot play this video. Please try a more recent browser.
+          </video>
+          <div class="start-screen" id="qr-start-screen">
+            <div class="start-content">
+              <span class="film-label">The sticker on the sign</span>
+              <button class="start-button" id="qr-start" type="button"><span class="play-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M8 5.5v13l11-6.5Z"/></svg></span><span class="start-label">Watch the story</span></button>
+              <p>Sound on · The story pauses for your choice</p>
+            </div>
+          </div>
+          <div class="stage-notice" id="qr-stage-notice" hidden><span id="qr-stage-notice-text">Your turn to choose</span></div>
+        </div>
+
+        <section class="qr-panel qr-choice" id="qr-choice" aria-labelledby="qr-choice-title" hidden>
+          <h2 class="sr-only" id="qr-choice-title" tabindex="-1">What would you do?</h2>
+          <button class="qr-choice-button" id="qr-choose-scam" type="button"><span class="choice-letter" aria-hidden="true">A</span>Enter your details and continue.</button>
+          <button class="qr-choice-button" id="qr-choose-check" type="button"><span class="choice-letter" aria-hidden="true">B</span>Check the website address first.</button>
+        </section>
+
+        <section class="qr-panel qr-complete" id="qr-complete" aria-label="Your result" hidden>
+          <div class="qr-page" id="qr-page-0">
+            <p class="eyebrow" id="qr-outcome-label">THE UNSAFE CHOICE</p>
+            <h2 id="qr-complete-title" tabindex="-1">The driver’s details were sent to a fraudulent website.</h2>
+            <p id="qr-complete-description"></p>
+            <div class="qr-actions">
+              <button class="primary-button" id="qr-remember" type="button">What to remember <span aria-hidden="true">→</span></button>
+              <button class="text-button" id="qr-other-0" type="button">Watch the other ending <span aria-hidden="true">→</span></button>
+            </div>
+          </div>
+          <div class="qr-page" id="qr-page-1" hidden>
+            <p class="eyebrow">Remember these three steps</p>
+            <h2 id="qr-remember-title" tabindex="-1">Pause. Check the address. Verify with the business.</h2>
+            <ol class="safety-steps">
+              <li><strong>Pause.</strong> A sticker can hide the real code. Look at the website address after you scan.</li>
+              <li><strong>Check the address.</strong> Compare it with the one printed on the sign or on the company’s own website.</li>
+              <li><strong>Verify with the business.</strong> Use the operator’s own website, or ask staff if you are unsure.</li>
+            </ol>
+            <p class="qr-caveat">A real company may use a separate payment provider with a different address. An unfamiliar address is a reason to verify, not proof of fraud.</p>
+            <div class="qr-actions">
+              <button class="text-button" id="qr-back" type="button">← Back</button>
+              <button class="primary-button" id="qr-other-1" type="button">Watch the other ending <span aria-hidden="true">→</span></button>
+              <button class="text-button" id="qr-restart" type="button">Start the story again</button>
+              <button class="text-button" id="qr-open-presentation" type="button">Read about QR codes</button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="controls" id="qr-controls" aria-label="Video controls">
+        <button id="qr-play-pause" class="control-button" type="button" disabled>Play</button>
+        <label class="sr-only" for="qr-progress">Video position in seconds</label>
+        <input id="qr-progress" class="progress" type="range" min="0" max="1" step="0.1" value="0" disabled>
+        <span class="time" id="qr-time" aria-hidden="true">0:00 / 0:00</span>
+        <button id="qr-mute" class="control-button sound" type="button" aria-pressed="false">Mute sound</button>
+      </div>
+
+      <div class="error-panel" id="qr-error-panel" role="alert" hidden>
+        <h2>The video couldn’t play</h2><p id="qr-error-message">Check your connection, then try again.</p>
+        <button id="qr-retry" class="primary-button" type="button">Try again</button>
+      </div>
+    </section>
+    <p class="qr-fiction">TownPark and the .example website addresses are fictional demonstration details.</p>
+    <p class="sr-only" role="status" id="qr-status" aria-live="polite"></p>
   </main>
 </body>
 </html>

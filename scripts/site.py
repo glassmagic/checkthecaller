@@ -21,11 +21,14 @@ import webbrowser
 
 ROOT = Path(__file__).resolve().parent.parent
 PUBLIC_FILES = (
-    "index.html", "styles.css", "app.js", "access.js", "presentation.js", "speaker.enc.json", "_headers",
+    "index.html", "styles.css", "app.js", "qr.js", "access.js", "presentation.js", "speaker.enc.json", "_headers",
     "assets/check-the-caller.svg", "assets/check-the-caller.png", "assets/poster.jpg", "assets/poster-portrait.jpg",
+    "assets/qr-poster.jpg",
     "assets/fonts/Carlito-Regular.woff2", "assets/fonts/Carlito-Bold.woff2", "assets/fonts/OFL.txt",
     "assets/portrait-right.mp4", "assets/portrait-wrong.mp4",
     "ScamProtection_Right.m4v", "ScamProtection_Wrong.m4v",
+    "assets/QRScamAssets/QRFraudPart1.m4v", "assets/QRScamAssets/QR Fraud Answer 1.m4v",
+    "assets/QRScamAssets/QR Fraud Answer 2.m4v",
 )
 VIDEO_FILES = tuple(name for name in PUBLIC_FILES if name.endswith(('.mp4', '.m4v')))
 
@@ -35,7 +38,7 @@ def local_html():
     document = (ROOT / 'index.html').read_text(encoding='utf-8')
     styles = (ROOT / 'styles.css').read_text(encoding='utf-8')
     scripts = {name: (ROOT / name).read_text(encoding='utf-8')
-               for name in ('access.js', 'app.js', 'presentation.js')}
+               for name in ('access.js', 'app.js', 'qr.js', 'presentation.js')}
     mime_types = {'.svg': 'image/svg+xml', '.png': 'image/png',
                   '.jpg': 'image/jpeg', '.woff2': 'font/woff2'}
     for name in PUBLIC_FILES:
@@ -51,6 +54,7 @@ def local_html():
     sealed = json.loads((ROOT / 'speaker.enc.json').read_text(encoding='utf-8'))
     bootstrap = ('window.checkTheCallerOffline = {payload: ' + json.dumps(sealed) +
                  ', sections: {film: function () {\n' + scripts['app.js'] +
+                 '\n}, qr: function () {\n' + scripts['qr.js'] +
                  '\n}, presentation: function () {\n' + scripts['presentation.js'] + '\n}}};\n' +
                  scripts['access.js'])
     # Inline raw-text elements must not contain an HTML closing tag, even in a string.
@@ -61,9 +65,9 @@ def local_html():
     licence = html.escape((ROOT / 'assets/fonts/OFL.txt').read_text(encoding='utf-8'))
     document = document.replace('</body>', f'<template id="font-licence">{licence}</template>\n<script>\n{bootstrap}\n</script>\n</body>')
     document = document.replace('Check your connection, then try again.',
-                                'Keep all four video files beside this HTML file, then try again.')
+                                'Keep all the video files beside this HTML file, then try again.')
     document = document.replace('Check your connection and select Try again.',
-                                'Keep all four video files beside this HTML file and select Try again.')
+                                'Keep all the video files beside this HTML file and select Try again.')
     return document
 
 

@@ -58,7 +58,7 @@ class SiteTests(unittest.TestCase):
             return site.build_local()
 
     def local_sources(self):
-        for name in ('index.html', 'styles.css', 'access.js', 'app.js', 'presentation.js'):
+        for name in ('index.html', 'styles.css', 'access.js', 'app.js', 'qr.js', 'presentation.js'):
             (self.root / name).write_bytes((self.original_root / name).read_bytes())
         (self.root / 'speaker.enc.json').write_text(json.dumps({'data': 'sealed-fixture'}))
 
@@ -77,6 +77,13 @@ class SiteTests(unittest.TestCase):
         self.assertIn('data:font/woff2;base64,', document)
         self.assertIn('id="font-licence"', document)
         self.assertNotIn('assets/', document)
+        # The QR film is a third deferred section, and its videos resolve beside the page.
+        self.assertIn('qr: function', document)
+        self.assertIn("'QRFraudPart1.m4v'", document)
+        self.assertIn("'QR Fraud Answer 1.m4v'", document)
+        self.assertIn("'QR Fraud Answer 2.m4v'", document)
+        self.assertNotIn('QRScamAssets', document)
+        self.assertNotIn('four video files', document)
         refs = []
         class Resources(HTMLParser):
             def handle_starttag(self, tag, attrs):

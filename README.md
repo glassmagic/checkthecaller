@@ -1,6 +1,6 @@
 # Check the Caller
 
-A single-page, accessible site with two parts behind a shared code: an HTML presentation, *Staying Safer in a Changing Digital World*, and the *Check the Caller* interactive film. Built with plain HTML, CSS and JavaScript. No npm packages, backend, accounts, analytics or external services are used.
+A single-page, accessible site with three parts behind a shared code: an HTML presentation, *Staying Safer in a Changing Digital World*, and two interactive films, *Check the Caller* (phone scams) and a QR code scam film. Built with plain HTML, CSS and JavaScript. No npm packages, backend, accounts, analytics or external services are used.
 
 ## Commands
 
@@ -13,7 +13,7 @@ make run                  # Build, serve and open the site in your browser
 make run PORT=8080        # Use another port
 make stop                 # Stop all preview servers for this project
 make build                # Produce a self-contained dist/ folder
-make local                # Produce local/index.html with four adjacent video files
+make local                # Produce local/index.html with its adjacent video files
 make test                 # Run player, access and packaging checks
 ```
 
@@ -23,11 +23,11 @@ Press Ctrl+C to stop the local server. It listens on localhost only and supports
 
 ## Offline copy
 
-Run `make local` (or `uv run --locked scripts/site.py local`). It creates `local/index.html` plus four video files beside it: the two original films and both portrait versions. Copy the whole `local/` folder to your computer or USB drive, then double-click `index.html` to open it in a current desktop browser. No web server, installation or internet connection is needed to view the copy. Use the usual access code.
+Run `make local` (or `uv run --locked scripts/site.py local`). It creates `local/index.html` plus seven video files beside it: the two phone-film endings and their portrait versions, and the three QR code film videos. Copy the whole `local/` folder to your computer or USB drive, then double-click `index.html` to open it in a current desktop browser. No web server, installation or internet connection is needed to view the copy. Use the usual access code.
 
-The HTML includes the styles, scripts, images, Carlito fonts and their licence, and the sealed payload that the access code unlocks. That payload carries no personal details, and neither the code nor the plain-text source in `private/` is ever packaged. Opening the presentation does not start the film; the 13 pages, 30-second choice, both endings, commentary and portrait switching work as on the website. Videos load directly from the adjacent files, without fetch-based background downloads. The advice links to external websites still need internet access.
+The HTML includes the styles, scripts, images, Carlito fonts and their licence, and the sealed payload that the access code unlocks. That payload carries no personal details, and neither the code nor the plain-text source in `private/` is ever packaged. Opening the presentation does not start either film; the 13 pages, both films' choices and endings, the phone film's commentary and portrait switching work as on the website. Videos load directly from the adjacent files, without fetch-based background downloads. The advice links to external websites still need internet access.
 
-Keep all five files together with their generated names. Re-running `make local` replaces the generated folder, so edit the source files rather than this copy. The folder is ignored by Git and excluded from the Netlify build. After changing the code or site, rebuild and redistribute the offline copy; existing copies do not update automatically.
+Keep all eight files together with their generated names. Re-running `make local` replaces the generated folder, so edit the source files rather than this copy. The folder is ignored by Git and excluded from the Netlify build. After changing the code or site, rebuild and redistribute the offline copy; existing copies do not update automatically.
 
 ## Python dependency management
 
@@ -55,9 +55,27 @@ The presentation is a native HTML version of `Staying-Safer-in-a-Digital-World-u
 
 Each page is sized from a 16:9 container that grows with its content, so nothing is clipped or scaled down, and the type scales with it. The presentation is set in Carlito, the metric-compatible match for the deck's Calibri, self-hosted in `assets/fonts/` with its SIL Open Font Licence. That typography is scoped to the presentation; the menu and film keep the system sans-serif. On phones the cards and diagrams reflow at 20px body text instead of shrinking a whole page.
 
-The address hash records where the visitor is, so the browser's Back button works and links can point to a page: `#slide-4` opens page 4, `#film` opens the film, and `#menu` (or no hash) opens the menu, always after the access code. Page 8 and the closing page link to the film; the film's replay screen links back to the presentation.
+The address hash records where the visitor is, so the browser's Back button works and links can point to a page: `#slide-4` opens page 4, `#film` opens the phone film, `#qr` opens the QR code film, and `#menu` (or no hash) opens the menu, always after the access code. Page 8 and the closing page link to the film; the film's replay screen links back to the presentation.
 
 The film's wording follows the presentation: the choice is *say yes* versus *say no, hang up and check*; the warning signs name the three responses (silence with silence, question with question, yes with no); and the closing advice is *Stop, check, report, ask*. The site's colours (teal, orange, yellow, purple, green and the pale card tints) are sampled from the slides, and every screen shares the title slide's teal canvas with its soft shapes. The slide diagrams (the device ring with spokes, the public/private iceberg, the routes bracketing into the scammer, the photo leader lines, the branching call and the arrows between the four steps) are drawn with CSS and one inline SVG; on narrow screens the cards stack and the connecting lines are dropped.
+
+## QR code film
+
+A third menu choice, *Try the QR code scam film*, opens `#qr`. It follows the phone film's format but is built from three separate videos in `assets/QRScamAssets/` rather than one video with a branch point: `QRFraudPart1.m4v` (about 54 seconds) is the lead-in, and `QR Fraud Answer 1.m4v` and `QR Fraud Answer 2.m4v` (about 14 and 17 seconds) are the alternative endings. The filenames, spaces included, are referenced in `qr.js` and `scripts/site.py`; if you replace a video, keep its name or update both.
+
+**The story.** A man replaces the QR code on a car park payment sign, and on a pub menu, with his own stickers. A driver scans the car park one and reaches a convincing payment page at `townpark-pay.example`, while the sign prints `townpark.example`. The lead-in stops on a frame with the A and B wording and "What would you do?" already in the picture.
+
+**The choice.** When the lead-in ends, the site's own two buttons appear: *Enter your details and continue* plays the scammed ending, and *Check the website address first* plays the check-first ending. On wide screens they dock beneath the wording in the video without covering it; on screens up to 900px wide they sit below the picture. The endings start straight on the action and carry no option text of their own.
+
+**After an ending** the viewer sees the outcome, then a *What to remember* page: pause, check the address, verify with the business. It includes the point that a real company may use a separate payment provider with a different address, so an unfamiliar address is a reason to verify rather than proof of fraud, and links to the presentation's QR code page (`#slide-11`). The viewer can watch the other ending, start again, or return to the menu. TownPark and the `.example` addresses are fictional, and a notice under the player says so.
+
+**Behaviour.** `qr.js` loads only when the film is chosen, so opening the menu or the presentation never starts a video download. Once the lead-in can play through, the two endings are fetched one at a time at low priority, and a finished download is used directly; an unfinished one never delays the chosen ending. Offline (`file:`) copies skip the background fetch and play the adjacent files. Leaving any film for the menu pauses its video. There are no portrait-cropped versions of these videos, so phones show the 16:9 picture at full width with the controls and choices beneath.
+
+**Video encoding.** The three videos are web-optimised H.264 at 1280×720 and 24 fps, about 13 MB in total (the supplied originals were 62 MB at 5 to 7 Mbps). The audio was copied untouched, the unused embedded cover image was dropped, the file index sits at the front so playback starts before the download finishes, and keyframes fall every two seconds so scrubbing is instant. Frame counts and durations match the originals exactly. To prepare a replacement, use:
+
+```sh
+ffmpeg -i IN.m4v -map 0:v:0 -map 0:a:0 -c:v libx264 -preset slow -crf 23 -profile:v high -level 4.0 -pix_fmt yuv420p -g 48 -keyint_min 24 -c:a copy -movflags +faststart OUT.m4v
+```
 
 ## Netlify Drop
 

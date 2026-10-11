@@ -9,7 +9,8 @@
   const PRIVATE_URL = 'speaker.enc.json';
   // Each section's script downloads only when that section is first opened, so
   // choosing the presentation never starts a video download.
-  const SCRIPTS = { film: 'app.js', presentation: 'presentation.js' };
+  const SCRIPTS = { film: 'app.js', qr: 'qr.js', presentation: 'presentation.js' };
+  const NAMES = { film: 'The film', qr: 'The QR code film', presentation: 'The presentation' };
   const $ = id => document.getElementById(id);
   const ready = new Set();
   let unlocked = false;
@@ -77,11 +78,12 @@
 
   function sectionFor(hash) {
     if (hash === '#film') return 'film';
+    if (hash === '#qr') return 'qr';
     if (/^#slide-\d+$/.test(hash)) return 'presentation';
     return 'hub';
   }
   function setHubBusy(busy) {
-    for (const id of ['open-film', 'open-presentation']) $(id).disabled = busy;
+    for (const id of ['open-film', 'open-qr', 'open-presentation']) $(id).disabled = busy;
   }
   function reveal(section) {
     $('access-page').hidden = true;
@@ -89,8 +91,13 @@
     $('presentation').hidden = section !== 'presentation';
     $('experience').hidden = section !== 'film';
     $('film-skip-link').hidden = section !== 'film';
+    $('qr-experience').hidden = section !== 'qr';
+    $('qr-skip-link').hidden = section !== 'qr';
+    // A hidden video keeps playing its sound, so stop whichever film was just left.
+    for (const video of document.querySelectorAll('video')) if (video.closest('[hidden]')) video.pause();
     if (section === 'hub') $('hub-title').focus({ preventScroll: true });
     else if (section === 'film') $('start').focus({ preventScroll: true });
+    else if (section === 'qr') $('qr-start').focus({ preventScroll: true });
     else $('deck-stage').focus({ preventScroll: true }); // presentation.js then focuses each page heading.
   }
   function load(section, onReady) {
@@ -119,9 +126,7 @@
       script.remove();
       setHubBusy(false);
       reveal('hub');
-      $('hub-error').textContent = section === 'film'
-        ? 'The film could not load. Check your connection and try again.'
-        : 'The presentation could not load. Check your connection and try again.';
+      $('hub-error').textContent = `${NAMES[section]} could not load. Check your connection and try again.`;
       $('hub-error').hidden = false;
     };
     document.head.append(script);
@@ -161,8 +166,11 @@
     $('access-error').hidden = true;
   });
   for (const id of ['open-film', 'deck-open-film', 'slide-film-link']) $(id).addEventListener('click', () => go('#film'));
+  $('open-qr').addEventListener('click', () => go('#qr'));
+  // The presentation's QR code page; if pages are ever renumbered, update this with them.
+  $('qr-open-presentation').addEventListener('click', () => go('#slide-11'));
   for (const id of ['open-presentation', 'film-open-presentation']) $(id).addEventListener('click', () => go('#slide-1'));
-  for (const id of ['deck-menu', 'film-menu', 'deck-finish']) $(id).addEventListener('click', () => go('#menu'));
+  for (const id of ['deck-menu', 'film-menu', 'qr-menu', 'deck-finish']) $(id).addEventListener('click', () => go('#menu'));
   window.addEventListener('hashchange', route);
   try {
     const saved = window.sessionStorage.getItem(STORAGE_KEY);
