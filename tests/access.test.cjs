@@ -16,7 +16,7 @@ before(async () => { payload = await encrypt(FIELDS, CODE, 1000); });
 const IDS = ['access-form', 'access-code', 'access-error', 'access-submit', 'access-page', 'hub', 'hub-title', 'hub-error',
   'open-film', 'open-presentation', 'presentation', 'deck-stage', 'deck-menu', 'deck-finish', 'slide-film-link', 'deck-open-film', 'deck-open-qr',
   'experience', 'film-menu', 'film-open-presentation', 'film-skip-link', 'start',
-  'open-qr', 'qr-experience', 'qr-menu', 'qr-skip-link', 'qr-start', 'qr-open-presentation'];
+  'open-qr', 'qr-experience', 'qr-menu', 'qr-skip-link', 'qr-start', 'qr-open-presentation', 'qr-slide-film-link'];
 const HIDDEN = ['hub', 'presentation', 'experience', 'film-skip-link', 'qr-experience', 'qr-skip-link', 'access-error', 'hub-error'];
 // Unlocking awaits WebCrypto PBKDF2, which runs off the event loop, so allow real
 // time as well as a run of event-loop turns before the assertions look at the DOM.
@@ -356,6 +356,9 @@ test('the QR film links across to the presentation page about QR codes', async (
   assert.equal(scripts[1].src, 'presentation.js');
   scripts[1].onload();
   assert.deepEqual(visible(), ['presentation']);
+  click('qr-slide-film-link');
+  assert.equal(location.hash, '#qr');
+  assert.deepEqual(visible(), ['qr-experience']);
 });
 
 test('a QR script download failure names the QR film and can be retried', async () => {

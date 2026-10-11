@@ -166,7 +166,7 @@
     $('access-error').hidden = true;
   });
   for (const id of ['open-film', 'deck-open-film', 'slide-film-link']) $(id).addEventListener('click', () => go('#film'));
-  for (const id of ['open-qr', 'deck-open-qr']) $(id).addEventListener('click', () => go('#qr'));
+  for (const id of ['open-qr', 'deck-open-qr', 'qr-slide-film-link']) $(id).addEventListener('click', () => go('#qr'));
   // The presentation's QR code page; if pages are ever renumbered, update this with them.
   $('qr-open-presentation').addEventListener('click', () => go('#slide-11'));
   for (const id of ['open-presentation', 'film-open-presentation']) $(id).addEventListener('click', () => go('#slide-1'));
