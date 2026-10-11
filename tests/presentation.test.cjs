@@ -51,12 +51,12 @@ function setup({ hash = '' } = {}) {
   return { $: id => elements[id], pages, stage, shown, key, location, focused: () => focused };
 }
 
-test('thirteen pages, starting on the first', () => {
+test('fourteen pages, starting on the first', () => {
   const { $, pages, stage, shown, focused } = setup();
-  assert.equal(pages.length, 13);
-  assert.deepEqual(PAGE_IDS, Array.from({ length: 13 }, (_, i) => `slide-${i + 1}`));
+  assert.equal(pages.length, 14);
+  assert.deepEqual(PAGE_IDS, Array.from({ length: 14 }, (_, i) => `slide-${i + 1}`));
   assert.deepEqual(shown(), ['slide-1']);
-  assert.equal($('deck-count').textContent, '1 of 13');
+  assert.equal($('deck-count').textContent, '1 of 14');
   assert.equal($('deck-back').disabled, true);
   assert.equal($('deck-next').hidden, false);
   assert.equal(focused(), 'slide-1');
@@ -68,7 +68,7 @@ test('Next and Back move one page, update the address and focus the new heading'
   $('deck-next').handlers.click();
   assert.equal(location.hash, '#slide-2');
   assert.deepEqual(shown(), ['slide-2']);
-  assert.equal($('deck-count').textContent, '2 of 13');
+  assert.equal($('deck-count').textContent, '2 of 14');
   assert.equal($('deck-back').disabled, false);
   assert.equal(focused(), 'slide-2');
   $('deck-back').handlers.click();
@@ -78,19 +78,23 @@ test('Next and Back move one page, update the address and focus the new heading'
   assert.deepEqual(shown(), ['slide-1'], 'Back stops at the first page');
 });
 
-test('the new scams page leads to the closing page, which hides Next', () => {
+test('the repeated scams page leads to the closing page, which hides Next', () => {
   const { $, shown, location } = setup({ hash: '#slide-12' });
   assert.deepEqual(shown(), ['slide-12']);
   assert.equal($('deck-next').hidden, false);
   $('deck-next').handlers.click();
   assert.deepEqual(shown(), ['slide-13']);
-  assert.equal($('deck-count').textContent, '13 of 13');
+  assert.equal($('deck-count').textContent, '13 of 14');
+  assert.equal($('deck-next').hidden, false);
+  $('deck-next').handlers.click();
+  assert.deepEqual(shown(), ['slide-14']);
+  assert.equal($('deck-count').textContent, '14 of 14');
   assert.equal($('deck-next').hidden, true);
   $('deck-next').handlers.click();
-  assert.equal(location.hash, '#slide-13');
-  assert.deepEqual(shown(), ['slide-13']);
+  assert.equal(location.hash, '#slide-14');
+  assert.deepEqual(shown(), ['slide-14']);
   $('deck-back').handlers.click();
-  assert.deepEqual(shown(), ['slide-12']);
+  assert.deepEqual(shown(), ['slide-13']);
   assert.equal($('deck-next').hidden, false);
 });
 
@@ -105,7 +109,7 @@ test('arrow, page and Home/End keys move between pages', () => {
   key('PageUp');
   assert.deepEqual(shown(), ['slide-1']);
   key('End');
-  assert.deepEqual(shown(), ['slide-13']);
+  assert.deepEqual(shown(), ['slide-14']);
   key('Home');
   assert.deepEqual(shown(), ['slide-1']);
   assert.equal(key('Enter').prevented, false, 'other keys are left alone');
@@ -121,7 +125,7 @@ test('keys are ignored while typing, with modifiers, or when the presentation is
 });
 
 test('page numbers in the address are clamped and other addresses leave the page alone', () => {
-  assert.deepEqual(setup({ hash: '#slide-99' }).shown(), ['slide-13']);
+  assert.deepEqual(setup({ hash: '#slide-99' }).shown(), ['slide-14']);
   assert.deepEqual(setup({ hash: '#slide-0' }).shown(), ['slide-1']);
   const { shown, location } = setup({ hash: '#slide-5' });
   assert.deepEqual(shown(), ['slide-5']);
