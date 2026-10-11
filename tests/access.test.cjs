@@ -14,7 +14,7 @@ let payload;
 before(async () => { payload = await encrypt(FIELDS, CODE, 1000); });
 
 const IDS = ['access-form', 'access-code', 'access-error', 'access-submit', 'access-page', 'hub', 'hub-title', 'hub-error',
-  'open-film', 'open-presentation', 'presentation', 'deck-stage', 'deck-menu', 'deck-finish', 'slide-film-link',
+  'open-film', 'open-presentation', 'presentation', 'deck-stage', 'deck-menu', 'deck-finish', 'slide-film-link', 'deck-open-film', 'deck-open-qr',
   'experience', 'film-menu', 'film-open-presentation', 'film-skip-link', 'start',
   'open-qr', 'qr-experience', 'qr-menu', 'qr-skip-link', 'qr-start', 'qr-open-presentation'];
 const HIDDEN = ['hub', 'presentation', 'experience', 'film-skip-link', 'qr-experience', 'qr-skip-link', 'access-error', 'hub-error'];
@@ -218,6 +218,25 @@ test('choosing the presentation loads its script rather than the film, and the t
   assert.deepEqual(visible(), ['hub']);
   click('deck-finish');
   assert.deepEqual(visible(), ['hub']);
+});
+
+test('the closing page offers both films and the menu', async () => {
+  const { scripts, enter, click, visible, location } = setup();
+  await enter(CODE);
+  click('open-presentation');
+  scripts[0].onload();
+  assert.deepEqual(visible(), ['presentation']);
+  click('deck-open-film');
+  assert.equal(scripts[1].src, 'app.js');
+  scripts[1].onload();
+  assert.deepEqual(visible(), ['experience']);
+  click('deck-menu');
+  assert.deepEqual(visible(), ['hub']);
+  click('deck-open-qr');
+  assert.equal(scripts[2].src, 'qr.js');
+  scripts[2].onload();
+  assert.deepEqual(visible(), ['qr-experience']);
+  assert.equal(location.hash, '#qr');
 });
 
 test('a link straight to a page or to the film opens it once the code is entered', async () => {
