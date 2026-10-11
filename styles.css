@@ -88,6 +88,7 @@ h1 span { color: var(--yellow); }
 .num-orange { background: var(--orange); }
 .num-teal { background: var(--teal); }
 .num-purple { background: var(--purple); }
+.num-green { background: var(--green); }
 .num-yellow { background: var(--yellow); color: var(--ink); }
 
 /* Entry page and menu: one white card centred on the canvas. */
