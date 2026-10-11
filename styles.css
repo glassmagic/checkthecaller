@@ -343,6 +343,7 @@ h1 span { color: var(--yellow); }
 .scam-examples li { display: grid; grid-template-columns: 44px minmax(0, 1fr); align-items: center; gap: .85rem; min-height: 3rem; }
 .scam-example-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: white; color: var(--scam-accent); }
 .scam-example-icon svg { width: 28px; height: 28px; }
+.scam-example-icon img { display: block; width: 30px; height: auto; }
 .slide-scams .other-scams { background: var(--grey); }
 .other-scams p { color: var(--ink); }
 .slide-cover, .slide-closing { position: relative; overflow: hidden; background: var(--teal-dark); color: white; }
