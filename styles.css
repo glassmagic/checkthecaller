@@ -344,6 +344,18 @@ h1 span { color: var(--yellow); }
 .scam-example-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: white; color: var(--scam-accent); }
 .scam-example-icon svg { width: 28px; height: 28px; }
 .scam-example-icon img { display: block; width: 30px; height: auto; }
+/* Side by side, the two topic panels lock their headings and example rows into the
+   same tracks, so a longer title or a wrapped line in one column cannot stagger the
+   other. Phones stack the panels, where there is nothing to line up. */
+@media (min-width: 651px) {
+  @supports (grid-template-rows: subgrid) {
+    .scam-panels { grid-template-rows: auto repeat(4, auto); row-gap: 1rem; }
+    .scam-panels-three { grid-template-rows: auto repeat(3, auto); }
+    .scam-panel { display: grid; grid-template-rows: subgrid; grid-row: 1 / -1; }
+    .scam-panel-heading { grid-row: 1; margin-bottom: .5rem; }
+    .scam-examples { grid-row: 2 / -1; grid-template-rows: subgrid; }
+  }
+}
 .slide-scams .other-scams { background: var(--grey); }
 .other-scams p { color: var(--ink); }
 .slide-cover, .slide-closing { position: relative; overflow: hidden; background: var(--teal-dark); color: white; }
